@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<efcore namespace="Further.Operation" p1:name="Model" p1:Guid="2f33939e-72d4-42b5-8429-72a6f840ffcc" xmlns:p1="http://devart.com/schemas/EntityDeveloper/1.0">
+  <class name="$ComplexTypes">
+    <component class="ResultF.Result.OperationResult" IsExternal="true" p1:Guid="cf835cad-25b9-4595-85fe-070350a6bd6d">
+      <property name="Errors" type="String" p1:ValidateRequired="true" p1:Guid="95f366d6-82ae-4c94-a926-a378f2aef088">
+        <column name="" />
+      </property>
+      <property name="Success" type="String" p1:ValidateRequired="true" p1:Guid="9ac7fabe-a873-4ab3-94f1-2fa50b59ff9c">
+        <column name="" />
+      </property>
+      <property name="Property1" type="String" p1:ValidateRequired="true" p1:Guid="b1012604-4dbc-4c17-a62e-55f2d0c55b11">
+        <column name="" />
+      </property>
+    </component>
+  </class>
+  <class name="Operation" entity-set="Operations" p1:Guid="e79a55d4-845a-4657-bc82-e28d2dca6b3d">
+    <id name="Id" type="Guid" p1:ValidateRequired="true" p1:Guid="690a27e1-73c1-4b70-b0ad-8c44a1872def">
+      <column name="" />
+    </id>
+    <property name="Name" type="String" p1:ValidateRequired="true" p1:Guid="e3c29001-fb00-4c63-8981-9ffe3735acc7">
+      <column name="" />
+    </property>
+    <property name="Summary" type="String" p1:ValidateRequired="true" p1:Guid="0a891374-e20a-45fc-94ab-7e054d14b889">
+      <column name="" />
+    </property>
+    <property name="ExternalDocs" type="String" p1:ValidateRequired="true" p1:Guid="2ab91023-dcd6-4bc4-b28b-cec5f54801bf">
+      <column name="" />
+    </property>
+  </class>
+  <class name="OperationHistory" entity-set="OperationHistories" p1:Guid="a5e18d97-4c0e-4348-85a3-b25a52c85c6a">
+    <id name="Id" type="Guid" p1:ValidateRequired="true" p1:Guid="b271365e-b562-4de4-b738-8e43ffc8ff10">
+      <column name="" />
+    </id>
+    <property name="OperationId" type="String" p1:nullable="True" p1:ValidateRequired="false" p1:Guid="dcca3e1f-6288-4166-942c-93b221146cf1">
+      <column name="" />
+    </property>
+    <property name="FeatureName" type="String" p1:ValidateRequired="true" p1:Guid="4f7bc49f-449c-471d-8fa7-1efc5ba75fc5">
+      <column name="" />
+    </property>
+    <property name="EntityType" type="String" p1:ValidateRequired="true" p1:Guid="a32375a7-4ac0-430d-b9dc-207c05a460ce">
+      <column name="" />
+    </property>
+    <property name="EntityId" type="String" p1:ValidateRequired="true" p1:Guid="5526676a-8b8b-46fc-8c2a-1303d02b3aca">
+      <column name="" />
+    </property>
+    <component name="OperationResult" class="ResultF.Result.OperationResult" p1:ValidateRequired="false" p1:Guid="fb4962c1-51be-4e9c-aa14-d402d9ed9752">
+      <property name="Errors" />
+      <property name="Success" />
+      <property name="Property1" />
+    </component>
+  </class>
+</efcore>
