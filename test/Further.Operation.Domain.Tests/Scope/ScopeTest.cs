@@ -50,7 +50,7 @@ namespace Further.Operation.Scope
             {
                 Method1();
 
-                Method2();
+                await Method2();
 
                 var currentData = ambientScopeProvider.GetValue(TestScope);
 
@@ -65,13 +65,15 @@ namespace Further.Operation.Scope
                 currentData?.Add("Method1");
             }
 
-            void Method2()
+            Task Method2()
             {
                 var currentData = ambientScopeProvider.GetValue(TestScope);
 
                 currentData?.Add("Method2");
 
                 Method3();
+
+                return Task.CompletedTask;
             }
 
             void Method3()
@@ -113,6 +115,44 @@ namespace Further.Operation.Scope
             }
 
             await Task.WhenAll(tasks);
+        }
+
+        [Fact]
+        public async Task MultiTherdGetAsync()
+        {
+            var result = new List<string>();
+
+            using (ambientScopeProvider.BeginScope(TestScope, result))
+            {
+                var task1 = Task.Run(() =>
+                {
+                    var currentData = ambientScopeProvider.GetValue(TestScope);
+
+                    currentData?.Add("Task1");
+                });
+
+                var task2 = Task.Run(async () =>
+                {
+                    var currentData = ambientScopeProvider.GetValue(TestScope);
+
+                    currentData.RemoveAll(x => true);
+
+                    currentData?.Add("Task2");
+
+                    await Task.Delay(100);
+
+                    var currentData2 = ambientScopeProvider.GetValue(TestScope);
+
+                    currentData2?.Add("Task2-2");
+                });
+
+                await Task.WhenAll(task1, task2);
+
+                var currentData = ambientScopeProvider.GetValue(TestScope);
+
+                Assert.NotNull(currentData);
+                Assert.Equal(2, currentData.Count);
+            }
         }
     }
 }
