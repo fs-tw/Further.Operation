@@ -12,12 +12,12 @@ namespace Further.Abp.Operation
 
         OperationInfo? Current { get; }
 
-        IOperationScope Begin(bool requiresNew = false);
+        IOperationScope Begin(OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null, bool requiresNew = false);
 
         IOperationScope Reserve(string reservationName, bool requiresNew = false);
 
-        void BeginReserved(string reservationName);
+        void BeginReserved(string reservationName, OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null);
 
-        bool TryBeginReserved(string reservationName);
+        bool TryBeginReserved(string reservationName, OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null);
     }
 }

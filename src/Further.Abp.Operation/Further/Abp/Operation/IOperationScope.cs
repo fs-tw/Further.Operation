@@ -13,7 +13,7 @@ namespace Further.Abp.Operation
     {
         Guid Id { get; }
 
-        event EventHandler<OperationInfoEventArgs> Disposed;
+        event EventHandler<OperationScopeEventArgs> Disposed;
 
         IOperationScope? Outer { get; }
 
@@ -27,7 +27,7 @@ namespace Further.Abp.Operation
 
         OperationInfo? OperationInfo { get; }
 
-        void Initialize();
+        void Initialize(OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null);
 
         void Reserve([NotNull] string reservationName);
 

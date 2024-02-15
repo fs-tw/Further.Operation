@@ -10,7 +10,7 @@ using Volo.Abp.DependencyInjection;
 
 namespace Further.Abp.Operation
 {
-    public class ChildOperationScope : IOperationScope, ITransientDependency
+    public class ChildOperationScope : IOperationScope
     {
         public Guid Id => parent.Id;
 
@@ -26,17 +26,23 @@ namespace Further.Abp.Operation
 
         public OperationInfo? OperationInfo => parent.OperationInfo;
 
-        public event EventHandler<OperationInfoEventArgs> Disposed = default!;
+        public event EventHandler<OperationScopeEventArgs> Disposed = default!;
 
         private readonly IOperationScope parent;
 
-        public ChildOperationScope([NotNull] IOperationScope parent)
+        public ChildOperationScope([NotNull] IOperationScope parent, OperationInfoInitializeValue? value = null)
         {
             Check.NotNull(parent, nameof(parent));
 
             this.parent = parent;
 
             parent.Disposed += (sender, args) => { Disposed.InvokeSafely(sender!, args); };
+
+            if (value != null && OperationInfo != null)
+            {
+                this.OperationInfo.OperationId = value?.OperationId;
+                this.OperationInfo.OperationName = value?.OperationName;
+            }
         }
 
         public Task CompleteAsync(CancellationToken cancellationToken = default)
@@ -59,9 +65,9 @@ namespace Further.Abp.Operation
             parent.SetOuter(outer);
         }
 
-        public void Initialize()
+        public void Initialize(OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null)
         {
-            parent.Initialize();
+            parent.Initialize(options,value);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Further.Abp.Operation
     {
         public string? Message { get; set; }
 
-        public override void UpdateOperationInfo(OperationInfo operationInfo)
+        public override void UpdateOperationInfo(OperationInfo operationInfo, object methodResult)
         {
             if (Message != null)
             {

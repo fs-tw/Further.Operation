@@ -8,7 +8,7 @@ namespace Further.Abp.Operation
     {
         public string EntityType { get; set; } = null!;
 
-        public override void UpdateOperationInfo(OperationInfo operationInfo)
+        public override void UpdateOperationInfo(OperationInfo operationInfo, object methodResult)
         {
             
         }

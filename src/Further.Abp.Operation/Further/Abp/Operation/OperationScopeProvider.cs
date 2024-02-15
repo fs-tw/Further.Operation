@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -25,16 +26,19 @@ namespace Further.Abp.Operation
             this.serviceScopeFactory = serviceScopeFactory;
         }
 
-        public IOperationScope Begin(bool requiresNew = false)
+        public IOperationScope Begin(OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null, bool requiresNew = false)
         {
-            var currentOperationInfo = CurrentScope;
+            var currentOperationScope = CurrentScope;
 
-            if (currentOperationInfo != null && !requiresNew)
+            if (currentOperationScope != null && !requiresNew)
             {
-                return new ChildOperationScope(currentOperationInfo);
+                return new ChildOperationScope(currentOperationScope, value);
             }
 
-            return CreateNewOperationScope();
+            var operationScope = CreateNewOperationScope();
+            operationScope.Initialize(options, value);
+
+            return operationScope;
         }
 
         public IOperationScope Reserve(string reservationName, bool requiresNew = false)
@@ -48,37 +52,37 @@ namespace Further.Abp.Operation
                 return new ChildOperationScope(ambientOperationInfo.OperationScope);
             }
 
-            var operationInfo = CreateNewOperationScope();
-            operationInfo.Reserve(reservationName);
+            var operationScope = CreateNewOperationScope();
+            operationScope.Reserve(reservationName);
 
-            return operationInfo;
+            return operationScope;
         }
 
-        public void BeginReserved(string reservationName)
+        public void BeginReserved(string reservationName, OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null)
         {
-            if (!TryBeginReserved(reservationName))
+            if (!TryBeginReserved(reservationName, options, value))
             {
                 throw new AbpException($"Could not begin reserved operation for '{reservationName}'");
             }
         }
 
-        public bool TryBeginReserved(string reservationName)
+        public bool TryBeginReserved(string reservationName, OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null)
         {
             Check.NotNull(reservationName, nameof(reservationName));
 
-            var operationInfo = ambientOperationInfo.OperationScope;
+            var operationScope = ambientOperationInfo.OperationScope;
 
-            while (operationInfo != null && !operationInfo.IsReservedFor(reservationName))
+            while (operationScope != null && !operationScope.IsReservedFor(reservationName))
             {
-                operationInfo = operationInfo.Outer;
+                operationScope = operationScope.Outer;
             }
 
-            if (operationInfo == null)
+            if (operationScope == null)
             {
                 return false;
             }
 
-            operationInfo.Initialize();
+            operationScope.Initialize(options, value);
 
             return true;
         }
@@ -88,21 +92,21 @@ namespace Further.Abp.Operation
             var scope = serviceScopeFactory.CreateScope();
             try
             {
-                var outerOperationInfo = ambientOperationInfo.OperationScope;
+                var outerOperationScope = ambientOperationInfo.OperationScope;
 
-                var operationInfo = scope.ServiceProvider.GetRequiredService<IOperationScope>();
+                var operationScope = scope.ServiceProvider.GetRequiredService<IOperationScope>();
 
-                operationInfo.SetOuter(outerOperationInfo);
+                operationScope.SetOuter(outerOperationScope);
 
-                ambientOperationInfo.SetOperationScope(operationInfo);
+                ambientOperationInfo.SetOperationScope(operationScope);
 
-                operationInfo.Disposed += (sender, args) =>
+                operationScope.Disposed += (sender, args) =>
                 {
-                    ambientOperationInfo.SetOperationScope(outerOperationInfo);
+                    ambientOperationInfo.SetOperationScope(outerOperationScope);
                     scope.Dispose();
                 };
 
-                return operationInfo;
+                return operationScope;
             }
             catch
             {

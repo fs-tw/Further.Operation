@@ -7,13 +7,15 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Caching;
 using Volo.Abp.DependencyInjection;
+using Volo.Abp.Guids;
 
 namespace Further.Abp.Operation
 {
     public class OperationScope : IOperationScope, ITransientDependency
     {
-        public Guid Id { get; } = Guid.NewGuid();
+        public Guid Id { get; private set; }
 
         public IOperationScope? Outer { get; private set; }
 
@@ -27,20 +29,55 @@ namespace Further.Abp.Operation
 
         public OperationInfo? OperationInfo { get; set; }
 
-        public event EventHandler<OperationInfoEventArgs> Disposed = default!;
+        public event EventHandler<OperationScopeEventArgs> Disposed = default!;
 
         private Exception? _exception;
 
         private readonly IServiceProvider serviceProvider;
+        private readonly IGuidGenerator guidGenerator;
+        private readonly IDistributedCache<OperationInfo, Guid> distributedCache;
+
+        private OperationScopeOptions options { get; set; }
 
         public OperationScope(
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IGuidGenerator guidGenerator,
+            IDistributedCache<OperationInfo, Guid> distributedCache)
         {
             this.serviceProvider = serviceProvider;
+            this.guidGenerator = guidGenerator;
+            this.distributedCache = distributedCache;
         }
 
-        public void Initialize()
+        public void Initialize(OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null)
         {
+            var id = value?.Id;
+
+            if (Id == Guid.Empty && id == null)
+            {
+                Id = guidGenerator.Create();
+                OperationInfo = new OperationInfo(Id);
+            }
+
+            if (id != null)
+            {
+                Id = id.Value;
+                OperationInfo = distributedCache.Get(Id);
+            }
+
+            if (Id != Guid.Empty && id != null)
+            {
+                throw new AbpException("不能對OperationScope重複初始化");
+            }
+
+            if (OperationInfo != null)
+            {
+                OperationInfo.OperationId = value?.OperationId;
+                OperationInfo.OperationName = value?.OperationName;
+            }
+
+            this.options = options ?? new OperationScopeOptions();
+
             IsReserved = false;
         }
 
@@ -48,9 +85,17 @@ namespace Further.Abp.Operation
         {
             try
             {
-                var operationStore = serviceProvider.GetRequiredService<IOperationStore>();
+                if (options.SaveToCache && OperationInfo != null)
+                {
+                    await distributedCache.SetAsync(Id, OperationInfo);
+                }
 
-                await operationStore.SaveAsync(OperationInfo, cancellationToken);
+                if (!options.SaveToCache && OperationInfo != null)
+                {
+                    var operationStore = serviceProvider.GetRequiredService<IOperationStore>();
+
+                    await operationStore.SaveAsync(OperationInfo, cancellationToken);
+                }
 
                 IsCompleted = true;
             }
@@ -70,12 +115,7 @@ namespace Further.Abp.Operation
 
             IsDisposed = true;
 
-            if (!IsCompleted && _exception == null)
-            {
-                throw new AbpException("請結束本次操作");
-            }
-
-            Disposed.Invoke(this, new OperationInfoEventArgs(this));
+            Disposed.Invoke(this, new OperationScopeEventArgs(this));
         }
 
         public void Reserve([NotNull] string reservationName)
