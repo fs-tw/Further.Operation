@@ -1,4 +1,4 @@
-﻿using Further.Operation.OperationHistories;
+﻿using Further.Abp.Operation;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Caching;
 using Volo.Abp.Domain;
@@ -11,10 +11,7 @@ namespace Further.Operation;
     typeof(AbpCachingModule),
     typeof(OperationDomainSharedModule)
 )]
+[DependsOn(typeof(FurtherAbpOperationModule))]
 public class OperationDomainModule : AbpModule
 {
-    public override void PreConfigureServices(ServiceConfigurationContext context)
-    {
-        context.Services.OnRegistered(OperationHistoryInterceptorRegistrar.RegisterIfNeeded);
-    }
 }

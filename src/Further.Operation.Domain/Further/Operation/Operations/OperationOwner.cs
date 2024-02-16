@@ -10,6 +10,7 @@ using Volo.Abp;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.Json;
 #region EFCore.Entities Using
 
 #endregion
@@ -21,7 +22,7 @@ namespace Further.Operation.Operations
         public OperationOwner()
         {
             #region EFCore.Entities Default Constructor
-            
+
             #endregion
         }
         public OperationOwner(Guid id) : this()
@@ -54,7 +55,38 @@ namespace Further.Operation.Operations
         #endregion
 
         #region EFCore.Entities
-        
+        public void SetEntityId(Guid entityId)
+        {
+            this.EntityId = entityId;
+        }
+
+        public void SetEntityType(string entityType)
+        {
+            this.EntityType = entityType;
+        }
+
+        public void SetMetaData(Dictionary<string, object>? metaData, IJsonSerializer jsonSerializer)
+        {
+            if (metaData != null)
+            {
+                this.MetaData = jsonSerializer.Serialize(metaData);
+            }
+
+            if (metaData == null)
+            {
+                this.MetaData = "";
+            }
+        }
+
+        public Dictionary<string, object> GetMetaData(IJsonSerializer jsonSerializer)
+        {
+            if (this.MetaData.IsNullOrEmpty())
+            {
+                return new Dictionary<string, object>();
+            }
+
+            return jsonSerializer.Deserialize<Dictionary<string, object>>(this.MetaData);
+        }
         #endregion
     }
 }

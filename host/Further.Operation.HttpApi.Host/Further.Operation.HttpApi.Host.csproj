@@ -49,4 +49,20 @@
     <None Remove="Logs\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="DataModel\Operation.OperationDbContext.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="DataModel\Operation.efml">
+      <Generator>DevartEFCoreGenerator</Generator>
+      <LastGenOutput>Operation.info</LastGenOutput>
+    </None>
+    <None Update="DataModel\Operation.info">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Operation.efml</DependentUpon>
+    </None>
+  </ItemGroup>
+
 </Project>

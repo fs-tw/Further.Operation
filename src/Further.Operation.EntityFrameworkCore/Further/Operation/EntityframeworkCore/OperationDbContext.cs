@@ -19,7 +19,7 @@ namespace Further.Operation.EntityFrameworkCore
 
     [ConnectionStringName(OperationDbProperties.ConnectionStringName)]
     #region EFCore.DbContext Declare
-    public partial class OperationDbContext : Volo.Abp.EntityFrameworkCore.AbpDbContext<OperationDbContext>, IOperationDbContext 
+    public partial class OperationDbContext : Volo.Abp.EntityFrameworkCore.AbpDbContext<OperationDbContext>, IOperationDbContext
     #endregion
     {
 
@@ -38,11 +38,13 @@ namespace Further.Operation.EntityFrameworkCore
             set;
         }
         #region EFCore.DbContext ObjectServices
-        
+
         #endregion
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            base.OnModelCreating(builder);
+
             builder.ConfigureOperation();
         }
 

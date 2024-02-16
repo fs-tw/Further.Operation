@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29001.49
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Further.Operation.Domain.Shared", "src\Further.Operation.Domain.Shared\Further.Operation.Domain.Shared.csproj", "{D64C1577-4929-4B60-939E-96DE1534891A}"
 EndProject
@@ -49,15 +49,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Further.Operation.Host.Shar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Further.Operation.Web.Unified", "host\Further.Operation.Web.Unified\Further.Operation.Web.Unified.csproj", "{3D872C41-E226-45C8-89C1-9D3DBD7C73F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Further.Operation.Blazor", "src\Further.Operation.Blazor\Further.Operation.Blazor.csproj", "{B94CB482-486B-4513-B588-94EF0504FDC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Further.Operation.Blazor", "src\Further.Operation.Blazor\Further.Operation.Blazor.csproj", "{B94CB482-486B-4513-B588-94EF0504FDC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Further.Operation.Blazor.Host", "host\Further.Operation.Blazor.Host\Further.Operation.Blazor.Host.csproj", "{C30E41CB-7461-4103-87F3-7B1D6E6F16EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Further.Operation.Blazor.Host", "host\Further.Operation.Blazor.Host\Further.Operation.Blazor.Host.csproj", "{C30E41CB-7461-4103-87F3-7B1D6E6F16EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Further.Operation.Blazor.Server", "src\Further.Operation.Blazor.Server\Further.Operation.Blazor.Server.csproj", "{FFB0C6C5-DC4B-41A5-A73B-4ED1B2C9D50A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Further.Operation.Blazor.Server", "src\Further.Operation.Blazor.Server\Further.Operation.Blazor.Server.csproj", "{FFB0C6C5-DC4B-41A5-A73B-4ED1B2C9D50A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Further.Operation.Blazor.WebAssembly", "src\Further.Operation.Blazor.WebAssembly\Further.Operation.Blazor.WebAssembly.csproj", "{32D2632A-A433-4980-99BF-17423ACD6C90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Further.Operation.Blazor.WebAssembly", "src\Further.Operation.Blazor.WebAssembly\Further.Operation.Blazor.WebAssembly.csproj", "{32D2632A-A433-4980-99BF-17423ACD6C90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Further.Operation.Blazor.Server.Host", "host\Further.Operation.Blazor.Server.Host\Further.Operation.Blazor.Server.Host.csproj", "{8558B0C8-0454-4093-874C-5B9EDAEBDF46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Further.Operation.Blazor.Server.Host", "host\Further.Operation.Blazor.Server.Host\Further.Operation.Blazor.Server.Host.csproj", "{8558B0C8-0454-4093-874C-5B9EDAEBDF46}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "framework", "framework", "{763A73CF-3F23-4EBE-ABAA-EF3AA96A7FAA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Further.Abp.Operation", "Further.Abp.Operation", "{3732BCFF-1B2C-4BF0-B533-E3F0E873A2E4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Further.Abp.Operation", "..\..\framework\Further.Abp.Operation\src\Further.Abp.Operation\Further.Abp.Operation.csproj", "{E4D2EC9F-173C-44EE-B59C-F989740CF33B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -165,6 +171,10 @@ Global
 		{8558B0C8-0454-4093-874C-5B9EDAEBDF46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8558B0C8-0454-4093-874C-5B9EDAEBDF46}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8558B0C8-0454-4093-874C-5B9EDAEBDF46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4D2EC9F-173C-44EE-B59C-F989740CF33B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4D2EC9F-173C-44EE-B59C-F989740CF33B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4D2EC9F-173C-44EE-B59C-F989740CF33B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4D2EC9F-173C-44EE-B59C-F989740CF33B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -195,6 +205,8 @@ Global
 		{FFB0C6C5-DC4B-41A5-A73B-4ED1B2C9D50A} = {649A3FFA-182F-4E56-9717-E6A9A2BEC545}
 		{32D2632A-A433-4980-99BF-17423ACD6C90} = {649A3FFA-182F-4E56-9717-E6A9A2BEC545}
 		{8558B0C8-0454-4093-874C-5B9EDAEBDF46} = {E400416D-2895-4512-9D17-90681EEC7E0A}
+		{3732BCFF-1B2C-4BF0-B533-E3F0E873A2E4} = {763A73CF-3F23-4EBE-ABAA-EF3AA96A7FAA}
+		{E4D2EC9F-173C-44EE-B59C-F989740CF33B} = {3732BCFF-1B2C-4BF0-B533-E3F0E873A2E4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {97B31592-9D30-762F-72BA-EC256AA0B76E}

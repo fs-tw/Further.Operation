@@ -18,7 +18,9 @@ namespace Further.Operation.Operations
         }
 
         #region EFCore.EntityConsts
-        
+        public const int OperationIdMaxLength = int.MaxValue;
+        public const int OperationNameMaxLength = int.MaxValue;
+        public const int ResultMaxLength = int.MaxValue;
         #endregion
     }
 }
