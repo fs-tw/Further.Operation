@@ -19,7 +19,7 @@ namespace Further.Operation.Operations
         public int ExecutionDuration { get; set; }
 
         #region DataTransferObject.EntityDto.Property
-        
+        public OperationResult OperationResult { get; set; }
         #endregion
     }
     public partial class OperationDto
@@ -27,7 +27,15 @@ namespace Further.Operation.Operations
         public partial class GetListInput : PagedAndSortedResultRequestDto
         {
             #region DataTransferObject.EntityDto GetList
-             
+            public string? Filter { get; set; }
+
+            public bool? IsSuccess { get; set; }
+
+            public FurtherOperationRange<int>? ExecutionDuration { get; set; }
+
+            public string? EntityType { get; set; }
+
+            public Guid? EntityId { get; set; }
             #endregion
         }
     }
@@ -38,14 +46,14 @@ namespace Further.Operation.Operations
         {
             #region DataTransferObject.EntityDto Create
             public string OperationId { get; set; }
-    
+
             public string OperationName { get; set; }
-    
+
             public string Result { get; set; }
-    
+
             public bool IsSuccess { get; set; }
-    
-            public int ExecutionDuration { get; set; } 
+
+            public int ExecutionDuration { get; set; }
             #endregion
         }
     }
@@ -55,18 +63,18 @@ namespace Further.Operation.Operations
         {
             #region DataTransferObject.EntityDto Update
             public string OperationId { get; set; }
-    
+
             public string OperationName { get; set; }
-    
+
             public string Result { get; set; }
-    
+
             public bool IsSuccess { get; set; }
-    
-            public int ExecutionDuration { get; set; } 
+
+            public int ExecutionDuration { get; set; }
             #endregion
         }
     }
     #region DataTransferObject.EntityDto
-    
+
     #endregion
 }

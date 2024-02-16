@@ -14,19 +14,19 @@ namespace Further.Operation.Operations
     {
         protected IOperationRepository operationRepository { get; }
         protected IJsonSerializer jsonSerializer { get; }
-        protected TestOperationStoreManager operationManager { get; }
+        protected TestOperationStoreManager testOperationStoreManager { get; }
 
         protected OperationStoreTest()
         {
             operationRepository = GetRequiredService<IOperationRepository>();
             jsonSerializer = GetRequiredService<IJsonSerializer>();
-            operationManager = GetRequiredService<TestOperationStoreManager>();
+            testOperationStoreManager = GetRequiredService<TestOperationStoreManager>();
         }
 
         [Fact]
         public async Task OperationStoreSaveAsync()
         {
-            var operationId = await operationManager.SaveAsync();
+            var operationId = await testOperationStoreManager.SaveAsync();
 
             var operation = await operationRepository.GetAsync(operationId);
 
