@@ -26,7 +26,7 @@ namespace Further.Abp.Operation
             this.serviceScopeFactory = serviceScopeFactory;
         }
 
-        public IOperationScope Begin(OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null, bool requiresNew = false)
+        public virtual IOperationScope Begin(OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null, bool requiresNew = false)
         {
             var currentOperationScope = CurrentScope;
 
@@ -41,7 +41,7 @@ namespace Further.Abp.Operation
             return operationScope;
         }
 
-        public IOperationScope Reserve(string reservationName, bool requiresNew = false)
+        public virtual IOperationScope Reserve(string reservationName, bool requiresNew = false)
         {
             Check.NotNull(reservationName, nameof(reservationName));
 
@@ -58,7 +58,7 @@ namespace Further.Abp.Operation
             return operationScope;
         }
 
-        public void BeginReserved(string reservationName, OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null)
+        public virtual void BeginReserved(string reservationName, OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null)
         {
             if (!TryBeginReserved(reservationName, options, value))
             {

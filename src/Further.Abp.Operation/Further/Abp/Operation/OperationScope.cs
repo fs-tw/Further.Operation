@@ -1,8 +1,10 @@
 ﻿using FluentResults;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,11 +12,14 @@ using Volo.Abp;
 using Volo.Abp.Caching;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Guids;
+using Volo.Abp.Json;
 
 namespace Further.Abp.Operation
 {
     public class OperationScope : IOperationScope, ITransientDependency
     {
+        public const string OperationScopeReservationName = "_FurtherAbpOperationScope";
+
         public Guid Id { get; private set; }
 
         public IOperationScope? Outer { get; private set; }
@@ -31,25 +36,27 @@ namespace Further.Abp.Operation
 
         public event EventHandler<OperationScopeEventArgs> Disposed = default!;
 
-        private Exception? _exception;
+        private Stopwatch stopwatch { get; set; }
 
         private readonly IServiceProvider serviceProvider;
         private readonly IGuidGenerator guidGenerator;
         private readonly IDistributedCache<OperationInfo, Guid> distributedCache;
+        private readonly ILogger<OperationScope> logger;
+        private readonly IJsonSerializer jsonSerializer;
 
         private OperationScopeOptions options { get; set; }
 
         public OperationScope(
-            IServiceProvider serviceProvider,
-            IGuidGenerator guidGenerator,
-            IDistributedCache<OperationInfo, Guid> distributedCache)
+            IServiceProvider serviceProvider)
         {
             this.serviceProvider = serviceProvider;
-            this.guidGenerator = guidGenerator;
-            this.distributedCache = distributedCache;
+            this.guidGenerator = serviceProvider.GetRequiredService<IGuidGenerator>();
+            this.distributedCache = serviceProvider.GetRequiredService<IDistributedCache<OperationInfo, Guid>>();
+            this.logger = serviceProvider.GetRequiredService<ILogger<OperationScope>>();
+            this.jsonSerializer = serviceProvider.GetRequiredService<IJsonSerializer>();
         }
 
-        public void Initialize(OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null)
+        public virtual void Initialize(OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null)
         {
             var id = value?.Id;
 
@@ -59,15 +66,20 @@ namespace Further.Abp.Operation
                 OperationInfo = new OperationInfo(Id);
             }
 
+            if (Id != Guid.Empty && id != null)
+            {
+                throw new AbpException("不能對OperationScope重複初始化");
+            }
+
             if (id != null)
             {
                 Id = id.Value;
                 OperationInfo = distributedCache.Get(Id);
-            }
 
-            if (Id != Guid.Empty && id != null)
-            {
-                throw new AbpException("不能對OperationScope重複初始化");
+                if (OperationInfo == null)
+                {
+                    OperationInfo = new OperationInfo(Id);
+                }
             }
 
             if (OperationInfo != null)
@@ -79,12 +91,26 @@ namespace Further.Abp.Operation
             this.options = options ?? new OperationScopeOptions();
 
             IsReserved = false;
+
+            stopwatch = Stopwatch.StartNew();
+
+            if (this.options.EnabledLogger)
+            {
+                logger.LogInformation("OperationScope {Id} Initialize.", Id);
+            }
         }
 
-        public async Task CompleteAsync(CancellationToken cancellationToken = default)
+        public virtual async Task CompleteAsync(CancellationToken cancellationToken = default)
         {
             try
             {
+                stopwatch.Stop();
+
+                if (OperationInfo != null)
+                {
+                    OperationInfo.ExecutionDuration = Convert.ToInt32(stopwatch.Elapsed.TotalMilliseconds);
+                }
+
                 if (options.SaveToCache && OperationInfo != null)
                 {
                     await distributedCache.SetAsync(Id, OperationInfo);
@@ -98,15 +124,25 @@ namespace Further.Abp.Operation
                 }
 
                 IsCompleted = true;
+
+                if (options.EnabledLogger && OperationInfo != null)
+                {
+                    var operationInfoString = jsonSerializer.Serialize(OperationInfo);
+                    logger.LogInformation("OperationScope {Id} completed.\n {Operation}",
+                        Id, operationInfoString);
+                }
             }
             catch (Exception ex)
             {
-                _exception = ex;
+                if (options.EnabledLogger)
+                {
+                    logger.LogError(ex, "OperationScope {Id} complete error.", Id);
+                }
                 throw;
             }
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             if (IsDisposed)
             {
@@ -116,9 +152,14 @@ namespace Further.Abp.Operation
             IsDisposed = true;
 
             Disposed.Invoke(this, new OperationScopeEventArgs(this));
+
+            if (this.options.EnabledLogger)
+            {
+                logger.LogInformation("OperationScope {Id} Dispose.", Id);
+            }
         }
 
-        public void Reserve([NotNull] string reservationName)
+        public virtual void Reserve([NotNull] string reservationName)
         {
             Check.NotNullOrWhiteSpace(reservationName, nameof(reservationName));
 
@@ -126,7 +167,7 @@ namespace Further.Abp.Operation
             IsReserved = true;
         }
 
-        public void SetOuter(IOperationScope? outer)
+        public virtual void SetOuter(IOperationScope? outer)
         {
             Outer = outer;
         }

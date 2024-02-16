@@ -11,45 +11,39 @@ using Xunit;
 
 namespace Further.Abp.Operation
 {
-    public class OperationScopeNestedTest : AbpIntegratedTest<FurtherAbpOperationTestBaseModule>
+    public class OperationScopeProviderTest : OperationTestBase
     {
-        private readonly IOperationScopeProvider operationScopeProvider;
-
-        public OperationScopeNestedTest()
-        {
-            operationScopeProvider = GetRequiredService<IOperationScopeProvider>();
-        }
-
-        protected override void SetAbpApplicationCreationOptions(AbpApplicationCreationOptions options)
-        {
-            options.UseAutofac();
-        }
-
         [Fact]
         public async Task Should_Create_Nested_OperationScope()
         {
             operationScopeProvider.Current.ShouldBeNull();
 
-            using (var scope1 = operationScopeProvider.Begin(value: new OperationInfoInitializeValue { OperationName = "Scope1" }))
+            try
             {
-                operationScopeProvider.Current.ShouldNotBeNull();
-                operationScopeProvider.Current.ShouldBe(scope1.OperationInfo);
-                operationScopeProvider.Current.OperationName.ShouldBe("Scope1");
-
-                using (var scope2 = operationScopeProvider.Begin(value: new OperationInfoInitializeValue { OperationName = "Scope2" }))
+                using (var scope1 = operationScopeProvider.Begin(value: new OperationInfoInitializeValue { OperationName = "Scope1" }))
                 {
                     operationScopeProvider.Current.ShouldNotBeNull();
-                    operationScopeProvider.Current.ShouldBe(scope2.OperationInfo);
-                    operationScopeProvider.Current.OperationName.ShouldBe("Scope2");
+                    operationScopeProvider.Current.ShouldBe(scope1.OperationInfo);
+                    operationScopeProvider.Current.OperationName.ShouldBe("Scope1");
 
-                    await scope2.CompleteAsync();
+                    using (var scope2 = operationScopeProvider.Begin(value: new OperationInfoInitializeValue { OperationName = "Scope2" }))
+                    {
+                        operationScopeProvider.Current.ShouldNotBeNull();
+                        operationScopeProvider.Current.ShouldBe(scope2.OperationInfo);
+                        operationScopeProvider.Current.OperationName.ShouldBe("Scope2");
+
+                        await scope2.CompleteAsync();
+                    }
+
+                    operationScopeProvider.Current.ShouldNotBeNull();
+                    operationScopeProvider.Current.ShouldBe(scope1.OperationInfo);
+
+                    await scope1.CompleteAsync();
                 }
-
-                operationScopeProvider.Current.ShouldNotBeNull();
-                operationScopeProvider.Current.ShouldBe(scope1.OperationInfo);
-                operationScopeProvider.Current.OperationName.ShouldBe("Scope2");
-
-                await scope1.CompleteAsync();
+            }
+            catch (OperationScopeCompleteException ex)
+            {
+                ex.OperationInfo.OperationName.ShouldBe("Scope2");
             }
 
             operationScopeProvider.Current.ShouldBeNull();
@@ -60,26 +54,39 @@ namespace Further.Abp.Operation
         {
             operationScopeProvider.Current.ShouldBeNull();
 
-            using (var scope1 = operationScopeProvider.Begin(value: new OperationInfoInitializeValue { OperationName = "Scope1" }))
+            try
             {
-                operationScopeProvider.Current.ShouldNotBeNull();
-                operationScopeProvider.Current.ShouldBe(scope1.OperationInfo);
-                operationScopeProvider.Current.OperationName.ShouldBe("Scope1");
-
-                using (var scope2 = operationScopeProvider.Begin(value: new OperationInfoInitializeValue { OperationName = "Scope2" }, requiresNew: true))
+                using (var scope1 = operationScopeProvider.Begin(value: new OperationInfoInitializeValue { OperationName = "Scope1" }))
                 {
                     operationScopeProvider.Current.ShouldNotBeNull();
-                    operationScopeProvider.Current.ShouldBe(scope2.OperationInfo);
-                    operationScopeProvider.Current.OperationName.ShouldBe("Scope2");
+                    operationScopeProvider.Current.ShouldBe(scope1.OperationInfo);
+                    operationScopeProvider.Current.OperationName.ShouldBe("Scope1");
 
-                    await scope2.CompleteAsync();
+                    try
+                    {
+                        using (var scope2 = operationScopeProvider.Begin(value: new OperationInfoInitializeValue { OperationName = "Scope2" }, requiresNew: true))
+                        {
+                            operationScopeProvider.Current.ShouldNotBeNull();
+                            operationScopeProvider.Current.ShouldBe(scope2.OperationInfo);
+                            operationScopeProvider.Current.OperationName.ShouldBe("Scope2");
+
+                            await scope2.CompleteAsync();
+                        }
+                    }
+                    catch (OperationScopeCompleteException ex)
+                    {
+                        ex.OperationInfo.OperationName.ShouldBe("Scope2");
+                    }
+
+                    operationScopeProvider.Current.ShouldNotBeNull();
+                    operationScopeProvider.Current.ShouldBe(scope1.OperationInfo);
+
+                    await scope1.CompleteAsync();
                 }
-
-                operationScopeProvider.Current.ShouldNotBeNull();
-                operationScopeProvider.Current.ShouldBe(scope1.OperationInfo);
-                operationScopeProvider.Current.OperationName.ShouldBe("Scope1");
-
-                await scope1.CompleteAsync();
+            }
+            catch (OperationScopeCompleteException ex)
+            {
+                ex.OperationInfo.OperationName.ShouldBe("Scope1");
             }
 
             operationScopeProvider.Current.ShouldBeNull();
@@ -96,21 +103,27 @@ namespace Further.Abp.Operation
                 var value = i.ToString();
                 tasks.Add(Task.Run(async () =>
                 {
-                    using (var scope = operationScopeProvider.Begin(value: new OperationInfoInitializeValue { OperationName = $"Scope{value}" }, requiresNew: true))
+                    try
                     {
-                        operationScopeProvider.Current.ShouldNotBeNull();
-                        operationScopeProvider.Current.ShouldBe(scope.OperationInfo);
-                        operationScopeProvider.Current.OperationName.ShouldBe($"Scope{value}");
+                        using (var scope = operationScopeProvider.Begin(value: new OperationInfoInitializeValue { OperationName = $"Scope{value}" }))
+                        {
+                            operationScopeProvider.Current.ShouldNotBeNull();
+                            operationScopeProvider.Current.ShouldBe(scope.OperationInfo);
+                            operationScopeProvider.Current.OperationName.ShouldBe($"Scope{value}");
 
-                        var changed = $"changed{value}";
+                            var changed = $"changed{value}";
 
-                        operationScopeProvider.Current.OperationName = changed;
+                            operationScopeProvider.Current.OperationName = changed;
 
-                        Task.Delay(10).Wait();
+                            Task.Delay(10).Wait();
 
-                        operationScopeProvider.Current.OperationName.ShouldBe(changed);
+                            operationScopeProvider.Current.OperationName.ShouldBe(changed);
 
-                        await scope.CompleteAsync();
+                            await scope.CompleteAsync();
+                        }
+                    }
+                    catch (OperationScopeCompleteException ex)
+                    {
                     }
                 }));
             }

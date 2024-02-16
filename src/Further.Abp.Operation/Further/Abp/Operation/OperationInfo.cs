@@ -14,7 +14,11 @@ namespace Further.Abp.Operation
 
         public Result Result { get; } = Result.Ok();
 
+        public bool IsSuccess => this.Result.IsSuccess;
+
         public List<OperationOwnerInfo> Owners { get; } = new();
+
+        public int ExecutionDuration { get; set; }
 
         public OperationInfo(Guid id)
         {

@@ -8,6 +8,6 @@ namespace Further.Abp.Operation
     {
         public bool SaveToCache { get; set; } = false;
 
-        public bool EnableLogger { get; set; } = false;
+        public bool EnabledLogger { get; set; } = false;
     }
 }
