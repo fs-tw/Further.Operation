@@ -1,33 +1,33 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Volo.Abp;
+﻿//using Microsoft.EntityFrameworkCore;
+//using Volo.Abp;
 
-namespace Further.Operation.EntityFrameworkCore;
+//namespace Further.Operation.EntityFrameworkCore;
 
-public static class OperationDbContextModelCreatingExtensions
-{
-    public static void ConfigureOperation(
-        this ModelBuilder builder)
-    {
-        Check.NotNull(builder, nameof(builder));
+//public static class OperationDbContextModelCreatingExtensions
+//{
+//    public static void ConfigureOperation(
+//        this ModelBuilder builder)
+//    {
+//        Check.NotNull(builder, nameof(builder));
 
-        /* Configure all entities here. Example:
+//        /* Configure all entities here. Example:
 
-        builder.Entity<Question>(b =>
-        {
-            //Configure table & schema name
-            b.ToTable(OperationDbProperties.DbTablePrefix + "Questions", OperationDbProperties.DbSchema);
+//        builder.Entity<Question>(b =>
+//        {
+//            //Configure table & schema name
+//            b.ToTable(OperationDbProperties.DbTablePrefix + "Questions", OperationDbProperties.DbSchema);
 
-            b.ConfigureByConvention();
+//            b.ConfigureByConvention();
 
-            //Properties
-            b.Property(q => q.Title).IsRequired().HasMaxLength(QuestionConsts.MaxTitleLength);
+//            //Properties
+//            b.Property(q => q.Title).IsRequired().HasMaxLength(QuestionConsts.MaxTitleLength);
 
-            //Relations
-            b.HasMany(question => question.Tags).WithOne().HasForeignKey(qt => qt.QuestionId);
+//            //Relations
+//            b.HasMany(question => question.Tags).WithOne().HasForeignKey(qt => qt.QuestionId);
 
-            //Indexes
-            b.HasIndex(q => q.CreationTime);
-        });
-        */
-    }
-}
+//            //Indexes
+//            b.HasIndex(q => q.CreationTime);
+//        });
+//        */
+//    }
+//}

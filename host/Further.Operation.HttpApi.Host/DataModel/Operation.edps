@@ -11,11 +11,11 @@
         <File Name="OperationConsts.cs" Project="Further.Operation.Domain.Shared" ProjectFolder="Further\Operation\Operations" />
         <File Name="Operation.cs" Project="Further.Operation.Domain" ProjectFolder="Further\Operation\Operations" />
         <File Name="OperationOwner.cs" Project="Further.Operation.Domain" ProjectFolder="Further\Operation\Operations" />
-        <File Name="OperationDbContext.cs" Project="Further.Operation.EntityFrameworkCore" ProjectFolder="Further\Operation\Entityframework" />
-        <File Name="IOperationDbContext.cs" Project="Further.Operation.EntityFrameworkCore" ProjectFolder="Further\Operation\Entityframework" />
+        <File Name="OperationDbContext.cs" Project="Further.Operation.EntityFrameworkCore" ProjectFolder="Further\Operation\EntityFrameworkCore" />
+        <File Name="IOperationDbContext.cs" Project="Further.Operation.EntityFrameworkCore" ProjectFolder="Further\Operation\EntityFrameworkCore" />
         <File Name="Operation.Configuration.cs" Project="Further.Operation.EntityFrameworkCore" ProjectFolder="Further\Operation\Operations\EntityFrameworkCore" />
         <File Name="OperationOwner.Configuration.cs" Project="Further.Operation.EntityFrameworkCore" ProjectFolder="Further\Operation\Operations\EntityFrameworkCore" />
-        <File Name="ModelBuilderExtensions.cs" Project="Further.Operation.EntityFrameworkCore" ProjectFolder="Further\Operation\Entityframework" />
+        <File Name="ModelBuilderExtensions.cs" Project="Further.Operation.EntityFrameworkCore" ProjectFolder="Further\Operation\EntityFrameworkCore" />
         <File Name="IOperationRepository.cs" Project="Further.Operation.Domain" ProjectFolder="Further\Operation" />
         <File Name="OperationRepository.cs" Project="Further.Operation.EntityFrameworkCore" ProjectFolder="Further\Operation" />
         <File Name="IOperationRepository.cs" Project="Further.Operation.Domain" ProjectFolder="Further\Operation\Operations" />

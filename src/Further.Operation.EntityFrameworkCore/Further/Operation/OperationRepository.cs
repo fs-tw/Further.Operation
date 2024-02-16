@@ -13,11 +13,11 @@ using Volo.Abp.Specifications;
 
 namespace Further.Operation
 {
-    public abstract partial class OperationRepository<TEntity, TKey> : EfCoreRepository<Further.Operation.Entityframework.IOperationDbContext, TEntity, TKey>, IOperationRepository<TEntity, TKey>
+    public abstract partial class OperationRepository<TEntity, TKey> : EfCoreRepository<Further.Operation.EntityFrameworkCore.IOperationDbContext, TEntity, TKey>, IOperationRepository<TEntity, TKey>
         where TEntity : class, IEntity<TKey>
     {
         public OperationRepository(
-            IDbContextProvider<Further.Operation.Entityframework.IOperationDbContext> dbContextProvider
+            IDbContextProvider<Further.Operation.EntityFrameworkCore.IOperationDbContext> dbContextProvider
             ) : base(dbContextProvider)
         {
         }

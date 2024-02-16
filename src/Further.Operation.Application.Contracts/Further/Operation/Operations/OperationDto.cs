@@ -37,7 +37,6 @@ namespace Further.Operation.Operations
         public partial class Create
         {
             #region DataTransferObject.EntityDto Create
-    
             public string OperationId { get; set; }
     
             public string OperationName { get; set; }
@@ -46,7 +45,7 @@ namespace Further.Operation.Operations
     
             public bool IsSuccess { get; set; }
     
-            public int ExecutionDuration { get; set; }
+            public int ExecutionDuration { get; set; } 
             #endregion
         }
     }
@@ -55,7 +54,6 @@ namespace Further.Operation.Operations
         public partial class Update
         {
             #region DataTransferObject.EntityDto Update
-    
             public string OperationId { get; set; }
     
             public string OperationName { get; set; }
@@ -64,7 +62,7 @@ namespace Further.Operation.Operations
     
             public bool IsSuccess { get; set; }
     
-            public int ExecutionDuration { get; set; }
+            public int ExecutionDuration { get; set; } 
             #endregion
         }
     }

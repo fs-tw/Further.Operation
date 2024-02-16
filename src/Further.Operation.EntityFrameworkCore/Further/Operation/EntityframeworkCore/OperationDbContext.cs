@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 
-namespace Further.Operation.Entityframework
+namespace Further.Operation.EntityFrameworkCore
 {
 
     [ConnectionStringName(OperationDbProperties.ConnectionStringName)]

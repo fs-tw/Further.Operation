@@ -3,7 +3,7 @@
  
 #endregion
 
-namespace Further.Operation.Entityframework
+namespace Further.Operation.EntityFrameworkCore
 {
     public static partial class ModelBuilderExtensions
     {

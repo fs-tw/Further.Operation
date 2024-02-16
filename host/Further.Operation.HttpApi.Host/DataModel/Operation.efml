@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<efcore context-namespace="Further.Operation.Entityframework" namespace="Further.Operation" p1:name="OperationDbContext" p1:Guid="92989c6e-ab90-4621-a140-0e236e911d25" p1:ContextBase="Volo.Abp.EntityFrameworkCore.AbpDbContext&lt;%type name%&gt;, I%type name%" xmlns:p1="http://devart.com/schemas/EntityDeveloper/1.0">
+<efcore context-namespace="Further.Operation.EntityFrameworkCore" namespace="Further.Operation" p1:name="OperationDbContext" p1:Guid="92989c6e-ab90-4621-a140-0e236e911d25" p1:ContextBase="Volo.Abp.EntityFrameworkCore.AbpDbContext&lt;%type name%&gt;, I%type name%" xmlns:p1="http://devart.com/schemas/EntityDeveloper/1.0">
   <p1:Attributes>
     <p1:Attribute Name="FS.EntityFirst.Attributes.SolutionAttribute" Assembly="FS.EntityFirst, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <p1:AttributeConstructor />
@@ -70,6 +70,28 @@
           </p1:PropertyValue>
           <p1:PropertyValue Name="IsExternal" Type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
             <boolean>false</boolean>
+          </p1:PropertyValue>
+        </p1:Properties>
+      </p1:Attribute>
+      <p1:Attribute Name="FS.EntityFirst.CodeRegions.CodeRegionAttribute" Assembly="FS.EntityFirst, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <p1:AttributeConstructor />
+        <p1:Properties>
+          <p1:PropertyValue Name="CodeRegionContent" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <string>cHVibGljIHN0cmluZyBPcGVyYXRpb25JZCB7IGdldDsgc2V0OyB9DQogICAgDQogICAgICAgICAgICBwdWJsaWMgc3RyaW5nIE9wZXJhdGlvbk5hbWUgeyBnZXQ7IHNldDsgfQ0KICAgIA0KICAgICAgICAgICAgcHVibGljIHN0cmluZyBSZXN1bHQgeyBnZXQ7IHNldDsgfQ0KICAgIA0KICAgICAgICAgICAgcHVibGljIGJvb2wgSXNTdWNjZXNzIHsgZ2V0OyBzZXQ7IH0NCiAgICANCiAgICAgICAgICAgIHB1YmxpYyBpbnQgRXhlY3V0aW9uRHVyYXRpb24geyBnZXQ7IHNldDsgfQ==</string>
+          </p1:PropertyValue>
+          <p1:PropertyValue Name="CodeRegionName" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <string>DataTransferObject.EntityDto Create</string>
+          </p1:PropertyValue>
+        </p1:Properties>
+      </p1:Attribute>
+      <p1:Attribute Name="FS.EntityFirst.CodeRegions.CodeRegionAttribute" Assembly="FS.EntityFirst, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <p1:AttributeConstructor />
+        <p1:Properties>
+          <p1:PropertyValue Name="CodeRegionContent" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <string>cHVibGljIHN0cmluZyBPcGVyYXRpb25JZCB7IGdldDsgc2V0OyB9DQogICAgDQogICAgICAgICAgICBwdWJsaWMgc3RyaW5nIE9wZXJhdGlvbk5hbWUgeyBnZXQ7IHNldDsgfQ0KICAgIA0KICAgICAgICAgICAgcHVibGljIHN0cmluZyBSZXN1bHQgeyBnZXQ7IHNldDsgfQ0KICAgIA0KICAgICAgICAgICAgcHVibGljIGJvb2wgSXNTdWNjZXNzIHsgZ2V0OyBzZXQ7IH0NCiAgICANCiAgICAgICAgICAgIHB1YmxpYyBpbnQgRXhlY3V0aW9uRHVyYXRpb24geyBnZXQ7IHNldDsgfQ==</string>
+          </p1:PropertyValue>
+          <p1:PropertyValue Name="CodeRegionName" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <string>DataTransferObject.EntityDto Update</string>
           </p1:PropertyValue>
         </p1:Properties>
       </p1:Attribute>
