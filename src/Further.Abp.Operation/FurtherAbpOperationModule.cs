@@ -7,4 +7,8 @@ namespace Further.Abp.Operation;
 
 public class FurtherAbpOperationModule : AbpModule
 {
+    public override void PreConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.OnRegistered(OperationInterceptorRegistrar.RegisterIfNeeded);
+    }
 }
