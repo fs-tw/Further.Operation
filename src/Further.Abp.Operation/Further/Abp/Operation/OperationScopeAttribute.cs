@@ -13,6 +13,11 @@ namespace Further.Abp.Operation
 
         public bool EnabledLogger { get; set; } = false;
 
+        /// <summary>
+        /// 最大保存時間，單位是分
+        /// </summary>
+        public int MaxSurvivalTime { get; set; } = 5;
+
         public string? OperationId { get; set; }
 
         public string? OperationName { get; set; }

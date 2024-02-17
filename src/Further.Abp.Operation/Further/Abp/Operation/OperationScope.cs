@@ -1,5 +1,6 @@
 ﻿using FluentResults;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -80,6 +81,11 @@ namespace Further.Abp.Operation
                 {
                     OperationInfo = new OperationInfo(Id);
                 }
+
+                if (OperationInfo != null)
+                {
+                    distributedCache.Remove(Id);
+                }
             }
 
             if (OperationInfo != null)
@@ -113,7 +119,10 @@ namespace Further.Abp.Operation
 
                 if (options.SaveToCache && OperationInfo != null)
                 {
-                    await distributedCache.SetAsync(Id, OperationInfo);
+                    await distributedCache.SetAsync(Id, OperationInfo, new DistributedCacheEntryOptions
+                    {
+                        SlidingExpiration = TimeSpan.FromMinutes(options.MaxSurvivalTime)
+                    });
                 }
 
                 if (!options.SaveToCache && OperationInfo != null)

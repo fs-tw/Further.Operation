@@ -115,6 +115,7 @@ namespace Further.Abp.Operation
             {
                 options.EnabledLogger = operationScopeAttribute.EnabledLogger;
                 options.SaveToCache = operationScopeAttribute.SaveToCache;
+                options.MaxSurvivalTime = operationScopeAttribute.MaxSurvivalTime;
             }
 
             return options;
