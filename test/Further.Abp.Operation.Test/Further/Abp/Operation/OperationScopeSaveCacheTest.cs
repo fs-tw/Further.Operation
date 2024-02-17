@@ -10,36 +10,32 @@ namespace Further.Abp.Operation
 {
     public class OperationScopeSaveCacheTest : OperationTestBase
     {
-        private readonly IDistributedCache<OperationInfo, Guid> distributedCache;
+        private readonly IOperationStore operationStore;
 
         public OperationScopeSaveCacheTest()
         {
-            this.distributedCache = this.GetRequiredService<IDistributedCache<OperationInfo, Guid>>();
+            this.operationStore = GetRequiredService<IOperationStore>();
         }
 
         [Fact]
         public async Task OperationScopeSaveCache()
         {
-            var options = new OperationScopeOptions
-            {
-                SaveToCache = true
-            };
-
             var value = new OperationInfoInitializeValue
             {
+                OperationId = "OperationScopeSaveCache",
                 OperationName = "OperationScopeSaveCache"
             };
 
             try
             {
-                using (var operationScope = operationScopeProvider.Begin(options, value))
+                using (var operationScope = operationScopeProvider.Begin(value: value))
                 {
                     await operationScope.CompleteAsync();
                 }
             }
             catch (OperationScopeCompleteException ex)
             {
-                var operationInfo = await distributedCache.GetAsync(ex.OperationInfo.Id);
+                var operationInfo = operationStore.Get(ex.OperationInfo.Id);
 
                 Assert.NotNull(operationInfo);
             }

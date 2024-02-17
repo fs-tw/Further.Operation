@@ -5,18 +5,16 @@ using System.Text;
 namespace Further.Abp.Operation
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Interface)]
-    public class OperationScopeAttribute: Attribute
+    public class OperationScopeAttribute : Attribute
     {
         public bool IsEnabled { get; set; } = true;
-
-        public bool SaveToCache { get; set; } = false;
 
         public bool EnabledLogger { get; set; } = false;
 
         /// <summary>
-        /// 最大保存時間，單位是分
+        /// 最大保存時間，單位是秒
         /// </summary>
-        public int MaxSurvivalTime { get; set; } = 5;
+        public int MaxSurvivalTime { get; set; } = 60;
 
         public string? OperationId { get; set; }
 

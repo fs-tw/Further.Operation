@@ -8,6 +8,8 @@ namespace Further.Abp.Operation
 {
     public interface IOperationStore
     {
-        Task SaveAsync(OperationInfo? operationInfo, CancellationToken cancellationToken = default);
+        Task SaveAsync(OperationInfo? operationInfo, OperationScopeOptions options, CancellationToken cancellationToken = default);
+
+        OperationInfo? Get(Guid id);
     }
 }

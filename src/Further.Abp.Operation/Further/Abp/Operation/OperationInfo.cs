@@ -18,7 +18,7 @@ namespace Further.Abp.Operation
 
         public List<OperationOwnerInfo> Owners { get; } = new();
 
-        public int ExecutionDuration { get; set; }
+        public int ExecutionDuration { get; set; } = 0;
 
         public OperationInfo(Guid id)
         {

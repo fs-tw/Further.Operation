@@ -41,9 +41,9 @@ namespace Further.Abp.Operation
 
         private readonly IServiceProvider serviceProvider;
         private readonly IGuidGenerator guidGenerator;
-        private readonly IDistributedCache<OperationInfo, Guid> distributedCache;
         private readonly ILogger<OperationScope> logger;
         private readonly IJsonSerializer jsonSerializer;
+        private readonly IOperationStore operationStore;
 
         private OperationScopeOptions options { get; set; }
 
@@ -52,39 +52,39 @@ namespace Further.Abp.Operation
         {
             this.serviceProvider = serviceProvider;
             this.guidGenerator = serviceProvider.GetRequiredService<IGuidGenerator>();
-            this.distributedCache = serviceProvider.GetRequiredService<IDistributedCache<OperationInfo, Guid>>();
             this.logger = serviceProvider.GetRequiredService<ILogger<OperationScope>>();
             this.jsonSerializer = serviceProvider.GetRequiredService<IJsonSerializer>();
+            this.operationStore = serviceProvider.GetRequiredService<IOperationStore>();
         }
 
         public virtual void Initialize(OperationScopeOptions? options = null, OperationInfoInitializeValue? value = null)
         {
+            if (Id != Guid.Empty) throw new AbpException("不能對OperationScope重複初始化");
+
+            stopwatch = Stopwatch.StartNew();
+
             var id = value?.Id;
 
-            if (Id == Guid.Empty && id == null)
+            if (id == null)
             {
                 Id = guidGenerator.Create();
                 OperationInfo = new OperationInfo(Id);
             }
 
-            if (Id != Guid.Empty && id != null)
-            {
-                throw new AbpException("不能對OperationScope重複初始化");
-            }
-
             if (id != null)
             {
-                Id = id.Value;
-                OperationInfo = distributedCache.Get(Id);
+                var operationInfo = operationStore.Get(id.Value);
 
-                if (OperationInfo == null)
+                if (operationInfo == null)
                 {
+                    Id = guidGenerator.Create();
                     OperationInfo = new OperationInfo(Id);
                 }
 
-                if (OperationInfo != null)
+                if (operationInfo != null)
                 {
-                    distributedCache.Remove(Id);
+                    Id = operationInfo.Id;
+                    OperationInfo = operationInfo;
                 }
             }
 
@@ -97,8 +97,6 @@ namespace Further.Abp.Operation
             this.options = options ?? new OperationScopeOptions();
 
             IsReserved = false;
-
-            stopwatch = Stopwatch.StartNew();
 
             if (this.options.EnabledLogger)
             {
@@ -114,22 +112,12 @@ namespace Further.Abp.Operation
 
                 if (OperationInfo != null)
                 {
-                    OperationInfo.ExecutionDuration = Convert.ToInt32(stopwatch.Elapsed.TotalMilliseconds);
+                    OperationInfo.ExecutionDuration += Convert.ToInt32(stopwatch.Elapsed.TotalMilliseconds);
                 }
 
-                if (options.SaveToCache && OperationInfo != null)
+                if (OperationInfo != null && OperationInfo.OperationId != null)
                 {
-                    await distributedCache.SetAsync(Id, OperationInfo, new DistributedCacheEntryOptions
-                    {
-                        SlidingExpiration = TimeSpan.FromMinutes(options.MaxSurvivalTime)
-                    });
-                }
-
-                if (!options.SaveToCache && OperationInfo != null)
-                {
-                    var operationStore = serviceProvider.GetRequiredService<IOperationStore>();
-
-                    await operationStore.SaveAsync(OperationInfo, cancellationToken);
+                    await operationStore.SaveAsync(OperationInfo, options, cancellationToken);
                 }
 
                 IsCompleted = true;
