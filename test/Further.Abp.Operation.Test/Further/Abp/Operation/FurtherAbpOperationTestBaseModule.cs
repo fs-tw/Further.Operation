@@ -17,7 +17,7 @@ namespace Further.Abp.Operation
     typeof(AbpAutofacModule),
     typeof(AbpTestBaseModule),
     typeof(AbpAuthorizationModule),
-    typeof(FurtherAbpOperationModule))]
+    typeof(AbpOperationModule))]
     [DependsOn(
     typeof(AbpDddDomainModule),
     typeof(AbpCachingModule))]

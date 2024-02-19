@@ -50,10 +50,10 @@ namespace Further.Operation.Operations
         {
             var result = new Result();
 
-            foreach (var reason in Reasons)
-            {
-                result.WithReason(reason);
-            }
+            //foreach (var reason in Reasons)
+            //{
+            //    result.WithReason(reason);
+            //}
 
             foreach (var error in Errors)
             {

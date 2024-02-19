@@ -58,6 +58,7 @@ namespace Further.Abp.Operation
                 Assert.Equal(
                     operationInfo.Owners.First().EntityType,
                     entityType);
+                Assert.Equal(operationInfo.Result.Reasons.Count, 1);
             }
         }
     }
