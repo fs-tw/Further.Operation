@@ -10,7 +10,7 @@ namespace Further.Operation;
     typeof(AbpCachingModule),
     typeof(OperationDomainSharedModule)
 )]
-[DependsOn(typeof(FurtherAbpOperationModule))]
+[DependsOn(typeof(AbpOperationModule))]
 public class OperationDomainModule : AbpModule
 {
 }

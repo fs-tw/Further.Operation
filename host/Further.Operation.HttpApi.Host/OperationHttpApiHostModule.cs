@@ -57,6 +57,10 @@ namespace Further.Operation;
     typeof(AbpSwashbuckleModule),
     typeof(AbpAspNetCoreSerilogModule)
     )]
+
+[DependsOn(
+       typeof(OperationRedisModule)
+       )]
 public class OperationHttpApiHostModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)

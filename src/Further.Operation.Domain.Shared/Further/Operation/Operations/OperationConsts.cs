@@ -21,6 +21,13 @@ namespace Further.Operation.Operations
         public const int OperationIdMaxLength = int.MaxValue;
         public const int OperationNameMaxLength = int.MaxValue;
         public const int ResultMaxLength = int.MaxValue;
+
+        public const string OperationBackUpKey = "OperationBackUp";
+
+        public static string GetOperationBackUpKey(string operationKey)
+        {
+            return $"{operationKey}:{OperationBackUpKey}";
+        }
         #endregion
     }
 }

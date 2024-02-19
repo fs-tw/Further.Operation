@@ -39,6 +39,7 @@
     <ProjectReference Include="..\..\src\Further.Operation.HttpApi\Further.Operation.HttpApi.csproj" />
     <ProjectReference Include="..\..\src\Further.Operation.Application\Further.Operation.Application.csproj" />
     <ProjectReference Include="..\..\src\Further.Operation.EntityFrameworkCore\Further.Operation.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Further.Operation.Redis\Further.Operation.Redis.csproj" />
     <ProjectReference Include="..\Further.Operation.Host.Shared\Further.Operation.Host.Shared.csproj" />
   </ItemGroup>
 

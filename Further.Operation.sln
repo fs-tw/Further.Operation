@@ -65,6 +65,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Further.Abp.Operation", "Fu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Further.Abp.Operation", "..\..\framework\Further.Abp.Operation\src\Further.Abp.Operation\Further.Abp.Operation.csproj", "{E4D2EC9F-173C-44EE-B59C-F989740CF33B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Further.Operation.Redis", "src\Further.Operation.Redis\Further.Operation.Redis.csproj", "{60B22075-CF54-4AFE-B79F-1EB91E7B0009}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -175,6 +177,10 @@ Global
 		{E4D2EC9F-173C-44EE-B59C-F989740CF33B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4D2EC9F-173C-44EE-B59C-F989740CF33B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4D2EC9F-173C-44EE-B59C-F989740CF33B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60B22075-CF54-4AFE-B79F-1EB91E7B0009}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60B22075-CF54-4AFE-B79F-1EB91E7B0009}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60B22075-CF54-4AFE-B79F-1EB91E7B0009}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60B22075-CF54-4AFE-B79F-1EB91E7B0009}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -207,6 +213,7 @@ Global
 		{8558B0C8-0454-4093-874C-5B9EDAEBDF46} = {E400416D-2895-4512-9D17-90681EEC7E0A}
 		{3732BCFF-1B2C-4BF0-B533-E3F0E873A2E4} = {763A73CF-3F23-4EBE-ABAA-EF3AA96A7FAA}
 		{E4D2EC9F-173C-44EE-B59C-F989740CF33B} = {3732BCFF-1B2C-4BF0-B533-E3F0E873A2E4}
+		{60B22075-CF54-4AFE-B79F-1EB91E7B0009} = {649A3FFA-182F-4E56-9717-E6A9A2BEC545}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {97B31592-9D30-762F-72BA-EC256AA0B76E}

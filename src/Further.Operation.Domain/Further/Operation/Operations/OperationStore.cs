@@ -1,9 +1,11 @@
 ﻿using Further.Abp.Operation;
+using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Volo.Abp.Caching;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Uow;
@@ -11,49 +13,50 @@ using Volo.Abp.Uow;
 namespace Further.Operation.Operations
 {
     [Dependency(ReplaceServices = true)]
-    public class OperationStore : IOperationStore, ITransientDependency
+    public class OperationStore : CacheOperationStore, ITransientDependency
     {
+        private readonly IDistributedCache<CacheOperationInfo, string> distributedCache;
         private readonly IOperationRepository operationRepository;
         private readonly OperationManager operationManager;
         private readonly IUnitOfWorkManager unitOfWorkManager;
         private readonly ICurrentTenant currentTenant;
 
         public OperationStore(
+            IDistributedCache<CacheOperationInfo, string> distributedCache,
             IOperationRepository operationRepository,
             OperationManager operationManager,
             IUnitOfWorkManager unitOfWorkManager,
-            ICurrentTenant currentTenant)
+            ICurrentTenant currentTenant) :
+            base(distributedCache)
         {
+            this.distributedCache = distributedCache;
             this.operationRepository = operationRepository;
             this.operationManager = operationManager;
             this.unitOfWorkManager = unitOfWorkManager;
             this.currentTenant = currentTenant;
         }
 
-        [UnitOfWork]
-        public async Task SaveAsync(OperationInfo? operationInfo, CancellationToken cancellationToken = default)
+        public override OperationInfo? Get(Guid id)
+        {
+            var backupKey = OperationConsts.GetOperationBackUpKey(id.GetCacheKey());
+
+            distributedCache.Get(backupKey);
+
+            return base.Get(id);
+        }
+
+        public override async Task SaveAsync(OperationInfo? operationInfo, OperationScopeOptions options, CancellationToken cancellationToken = default)
         {
             if (operationInfo == null) return;
 
-            var operation = await operationManager.CreateAsync(
-                id: operationInfo.Id,
-                operationId: operationInfo?.OperationId,
-                operationName: operationInfo?.OperationName,
-                result: operationInfo?.Result,
-                isSuccess: (bool)operationInfo?.IsSuccess,
-                executionDuration: (int)operationInfo?.ExecutionDuration,
-                tenantId: currentTenant.Id);
+            var backupKey = OperationConsts.GetOperationBackUpKey(operationInfo.GetCacheKey());
 
-            foreach (var owner in operationInfo?.Owners)
+            await distributedCache.SetAsync(backupKey, new CacheOperationInfo(operationInfo), new DistributedCacheEntryOptions
             {
-                operation = await operationManager.AddOperationOwnerAsync(
-                    operation: operation,
-                    entityType: owner.EntityType,
-                    entityId: owner.EntityId,
-                    metaData: owner.MetaData);
-            }
+                SlidingExpiration = TimeSpan.FromSeconds(options.MaxSurvivalTime + 10)
+            });
 
-            await operationRepository.InsertAsync(operation, cancellationToken: cancellationToken);
+            await base.SaveAsync(operationInfo, options, cancellationToken);
         }
     }
 }

@@ -34,6 +34,8 @@ namespace Further.Operation.Operations
             await testOperationStoreManager.SaveAsync();
             await testOperationStoreManager.SaveAsync();
 
+            Task.Delay(6000).Wait();
+
             var result = await operationAppService.GetListAsync(input);
 
             Assert.Equal(2, result.TotalCount);
@@ -43,6 +45,8 @@ namespace Further.Operation.Operations
         public async Task GetAsync()
         {
             var operationId = await testOperationStoreManager.SaveAsync();
+
+            Task.Delay(6000).Wait();
 
             var result = await operationAppService.GetAsync(operationId);
 

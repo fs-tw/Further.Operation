@@ -8,7 +8,7 @@ using Volo.Abp.DependencyInjection;
 
 namespace Further.Operation.Operations
 {
-    [OperationScope("TestOperationStoreManager", "測試OperationStore")]
+    [OperationScope("TestOperationStoreManager", "測試OperationStore",MaxSurvivalTime = 3)]
     public class TestOperationStoreManager : ITransientDependency
     {
         private readonly IOperationScopeProvider operationScopeProvider;

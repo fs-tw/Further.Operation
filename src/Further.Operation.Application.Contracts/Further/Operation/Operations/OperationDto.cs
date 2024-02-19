@@ -19,7 +19,7 @@ namespace Further.Operation.Operations
         public int ExecutionDuration { get; set; }
 
         #region DataTransferObject.EntityDto.Property
-        public OperationResult OperationResult { get; set; }
+        public OperationResultDto OperationResult { get; set; }
         #endregion
     }
     public partial class OperationDto

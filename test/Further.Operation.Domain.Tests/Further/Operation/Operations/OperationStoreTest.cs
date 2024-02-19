@@ -28,6 +28,8 @@ namespace Further.Operation.Operations
         {
             var operationId = await testOperationStoreManager.SaveAsync();
 
+            Task.Delay(6000).Wait();
+
             var operation = await operationRepository.GetAsync(operationId);
 
             var result = operation.GetResult(jsonSerializer);

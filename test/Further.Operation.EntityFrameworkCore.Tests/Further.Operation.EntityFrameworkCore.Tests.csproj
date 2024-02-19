@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Further.Operation.EntityFrameworkCore\Further.Operation.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Further.Operation.Redis\Further.Operation.Redis.csproj" />
     <ProjectReference Include="..\Further.Operation.Application.Tests\Further.Operation.Application.Tests.csproj" />
   </ItemGroup>
 
