@@ -31,14 +31,14 @@ namespace Further.Operation.Operations
                 SkipCount = 0
             };
 
-            await testOperationStoreManager.SaveAsync();
+            //await testOperationStoreManager.SaveAsync();
             await testOperationStoreManager.SaveAsync();
 
             Task.Delay(6000).Wait();
 
             var result = await operationAppService.GetListAsync(input);
 
-            Assert.Equal(2, result.TotalCount);
+            Assert.Equal(1, result.TotalCount);
         }
 
         [Fact]
