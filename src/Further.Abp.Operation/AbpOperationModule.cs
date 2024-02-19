@@ -9,6 +9,6 @@ public class AbpOperationModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.OnRegistered(OperationInterceptorRegistrar.RegisterIfNeeded);
+        context.Services.OnRegistred(OperationInterceptorRegistrar.RegisterIfNeeded);
     }
 }
