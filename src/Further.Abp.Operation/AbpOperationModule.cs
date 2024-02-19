@@ -5,7 +5,7 @@ using Volo.Abp.Modularity;
 namespace Further.Abp.Operation;
 
 
-public class FurtherAbpOperationModule : AbpModule
+public class AbpOperationModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {

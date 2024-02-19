@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FluentResults;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,10 +27,20 @@ namespace Further.Abp.Operation
                 OperationName = "OperationScopeSaveCache"
             };
 
+            var entityId = Guid.NewGuid();
+            var entityType = "Test";
+
             try
             {
+
                 using (var operationScope = operationScopeProvider.Begin(value: value))
                 {
+                    operationScopeProvider.Current.Result.WithSuccess("OperationRedisSaveSuccess");
+                    operationScopeProvider.Current.Owners.Add(new OperationOwnerInfo
+                    {
+                        EntityId = entityId,
+                        EntityType = entityType
+                    });
                     await operationScope.CompleteAsync();
                 }
             }
@@ -38,6 +49,15 @@ namespace Further.Abp.Operation
                 var operationInfo = operationStore.Get(ex.OperationInfo.Id);
 
                 Assert.NotNull(operationInfo);
+                Assert.Equal(
+                operationInfo.Result.Successes.First().Message,
+                "OperationRedisSaveSuccess");
+                Assert.Equal(
+                    operationInfo.Owners.First().EntityId,
+                    entityId);
+                Assert.Equal(
+                    operationInfo.Owners.First().EntityType,
+                    entityType);
             }
         }
     }

@@ -63,7 +63,9 @@ namespace Further.Abp.Operation
 
             stopwatch = Stopwatch.StartNew();
 
-            var id = value?.Id;
+            //TODO 在Redis快取Lock處理完之前關閉該功能
+            //var id = value?.Id;
+            Guid? id = null;
 
             if (id == null)
             {

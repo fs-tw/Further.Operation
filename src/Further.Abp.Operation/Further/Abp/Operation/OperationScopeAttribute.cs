@@ -14,7 +14,7 @@ namespace Further.Abp.Operation
         /// <summary>
         /// 最大保存時間，單位是秒
         /// </summary>
-        public int MaxSurvivalTime { get; set; } = 60;
+        public int MaxSurvivalTime { get; set; } = 30;
 
         public string? OperationId { get; set; }
 

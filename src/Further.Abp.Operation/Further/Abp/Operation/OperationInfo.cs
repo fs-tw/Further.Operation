@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Further.Abp.Operation
 {
@@ -20,9 +21,20 @@ namespace Further.Abp.Operation
 
         public int ExecutionDuration { get; set; } = 0;
 
+        [JsonConstructor]
         public OperationInfo(Guid id)
         {
             this.Id = id;
+        }
+
+        public OperationInfo(Guid id, string? operationId, string? operationName,Result result, List<OperationOwnerInfo> owners,int executionDuration)
+        {
+            this.Id = id;
+            this.OperationId = operationId;
+            this.OperationName = operationName;
+            this.Result = result;
+            this.Owners = owners;
+            this.ExecutionDuration = executionDuration;
         }
     }
 }
