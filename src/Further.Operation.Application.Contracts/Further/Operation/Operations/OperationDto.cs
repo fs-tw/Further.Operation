@@ -20,6 +20,8 @@ namespace Further.Operation.Operations
 
         #region DataTransferObject.EntityDto.Property
         public OperationResultDto OperationResult { get; set; }
+
+        public List<OperationOwnerDto> OperationOwners { get; set; }
         #endregion
     }
     public partial class OperationDto

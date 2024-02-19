@@ -53,5 +53,19 @@ namespace Further.Operation.Operations
             Assert.NotNull(result);
             Assert.Equal(operationId, result.Id);
         }
+
+        [Fact]
+        public async Task GetOwnerAsync()
+        {
+            var test = await testOperationStoreManager.SaveOwnerAsync();
+
+            Task.Delay(6000).Wait();
+
+            var result = await operationAppService.GetAsync(test.OpenInfoId);
+
+            Assert.NotNull(result);
+            Assert.Equal(test.OpenInfoId, result.Id);
+            Assert.Equal(1, result.OperationOwners.Count);
+        }
     }
 }

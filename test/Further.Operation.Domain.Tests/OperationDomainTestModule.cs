@@ -1,4 +1,5 @@
-﻿using Further.Operation.Options;
+﻿using Further.Operation.Operations;
+using Further.Operation.Options;
 using Further.Operation.Options.TypeDefinitions;
 using Volo.Abp.Modularity;
 
@@ -15,6 +16,7 @@ public class OperationDomainTestModule : AbpModule
         Configure<FurtherOperationOptions>(options =>
         {
             options.EntityTypes.Add(new OperationOwnerTypeDefinition("TestOperationType"));
+            options.EntityTypes.Add(new OperationOwnerTypeDefinition(typeof(TestOperationOwner).FullName));
         });
     }
 }
