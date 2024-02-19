@@ -4,6 +4,7 @@ using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Microsoft.Extensions.DependencyInjection;
+using Volo.Abp;
 
 namespace Further.Operation;
 
@@ -27,6 +28,18 @@ public class OperationHttpApiModule : AbpModule
             options.Resources
                 .Get<OperationResource>()
                 .AddBaseTypes(typeof(AbpUiResource));
+        });
+
+        Configure<AbpAspNetCoreMvcOptions>(options =>
+        {
+            options.ConventionalControllers
+            .Create(typeof(Further.Operation.Operations.OperationController).Assembly,
+            option =>
+            {
+                option.RootPath = OperationRemoteServiceConsts.ModuleName;
+                option.RemoteServiceName = OperationRemoteServiceConsts.RemoteServiceName;
+                option.ApplicationServiceTypes = ApplicationServiceTypes.All;
+            });
         });
     }
 }
