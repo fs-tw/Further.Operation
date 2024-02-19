@@ -6,10 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Caching;
 using Volo.Abp.Caching.StackExchangeRedis;
 using Volo.Abp.Modularity;
+using Volo.Abp.Threading;
 
 namespace Further.Operation;
 
@@ -23,6 +25,7 @@ public class OperationRedisModule : AbpModule
 {
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
-        context.UseOperationCacheExpriedSave();
+        var redisService = context.ServiceProvider.GetRequiredService<RedisSubscriptionService>();
+        redisService.Initialize();
     }
 }

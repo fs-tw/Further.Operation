@@ -38,7 +38,6 @@ public class OperationHttpApiModule : AbpModule
             {
                 option.RootPath = OperationRemoteServiceConsts.ModuleName;
                 option.RemoteServiceName = OperationRemoteServiceConsts.RemoteServiceName;
-                option.ApplicationServiceTypes = ApplicationServiceTypes.All;
             });
         });
     }

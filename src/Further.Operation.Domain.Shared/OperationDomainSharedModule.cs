@@ -10,8 +10,8 @@ using Volo.Abp.VirtualFileSystem;
 namespace Further.Operation;
 
 [DependsOn(
-    typeof(AbpValidationModule),
-    typeof(AbpDddDomainSharedModule)
+    typeof(AbpValidationModule)
+    //typeof(AbpDddDomainSharedModule)
 )]
 public class OperationDomainSharedModule : AbpModule
 {

@@ -45,6 +45,7 @@ namespace Further.Operation.Operations
 
             var items = await operationRepository.GetListAsync(
                 specification: filter,
+                includeDetails: true,
                 maxResultCount: input.MaxResultCount,
                 skipCount: input.SkipCount,
                 sorting: input.Sorting);

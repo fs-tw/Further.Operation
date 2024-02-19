@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Volo.Abp;
 
 namespace Further.Operation.Operations
@@ -15,7 +16,6 @@ namespace Further.Operation.Operations
         public static void UseOperationCacheExpriedSave(this ApplicationInitializationContext context)
         {
             var configuration = context.ServiceProvider.GetRequiredService<IConfiguration>();
-            var distributedCache = context.ServiceProvider.GetRequiredService<IDistributedCache>();
             var serviceScopeFactory = context.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
 
             var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"] + ",allowAdmin=true");
@@ -31,12 +31,18 @@ namespace Further.Operation.Operations
                 if (!channel.ToString().Contains("CacheOperationInfo")) return;
 
                 // 使用獨立的作用域處理每個事件
-                using (var scope = serviceScopeFactory.CreateScope())
+                try
                 {
-                    var key = (channel.ToString().Split(',')[1]).Split(new[] { ':' }, 2)[1];
+                    using (var scope = serviceScopeFactory.CreateScope())
+                    {
+                        var key = (channel.ToString().Split(',')[1]).Split(new[] { ':' }, 2)[1];
 
-                    var saveOperationProvider = scope.ServiceProvider.GetRequiredService<SaveOperationProvider>();
-                    await saveOperationProvider.SaveExpiredCacheOperation(key);
+                        var saveOperationProvider = scope.ServiceProvider.GetRequiredService<SaveOperationProvider>();
+                        await saveOperationProvider.SaveExpiredCacheOperation(key);
+                    }
+                }catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
                 }
             });
         }

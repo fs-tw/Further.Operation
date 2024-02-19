@@ -86,7 +86,9 @@ namespace Further.Operation.Operations
         {
             Check.NotNull(result, nameof(result));
 
-            this.Result = jsonSerializer.Serialize(result);
+            var operationResult = new OperationResult(result);
+
+            this.Result = jsonSerializer.Serialize(operationResult);
         }
 
         public OperationResult GetResult(IJsonSerializer jsonSerializer)
