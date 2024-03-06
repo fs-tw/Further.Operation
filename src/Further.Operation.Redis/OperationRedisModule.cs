@@ -23,9 +23,9 @@ namespace Further.Operation;
     )]
 public class OperationRedisModule : AbpModule
 {
-    public override void OnApplicationInitialization(ApplicationInitializationContext context)
-    {
-        var redisService = context.ServiceProvider.GetRequiredService<RedisSubscriptionService>();
-        redisService.Initialize();
-    }
+    //public override void OnApplicationInitialization(ApplicationInitializationContext context)
+    //{
+    //    var redisService = context.ServiceProvider.GetRequiredService<RedisSubscriptionService>();
+    //    redisService.Initialize();
+    //}
 }

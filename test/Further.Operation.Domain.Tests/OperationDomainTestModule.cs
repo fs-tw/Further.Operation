@@ -16,7 +16,6 @@ public class OperationDomainTestModule : AbpModule
         Configure<FurtherOperationOptions>(options =>
         {
             options.EntityTypes.Add(new OperationOwnerTypeDefinition("TestOperationType"));
-            options.EntityTypes.Add(new OperationOwnerTypeDefinition(typeof(TestOperationOwner).FullName));
         });
     }
 }

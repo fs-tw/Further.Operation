@@ -15,7 +15,7 @@ namespace Further.Operation.EntityFrameworkCore;
     typeof(OperationEntityFrameworkCoreModule),
     typeof(AbpEntityFrameworkCoreSqliteModule)
 )]
-[DependsOn(typeof(OperationRedisModule))]
+[DependsOn(typeof(Further.Abp.Operation.AbpOperationModule))]
 public class OperationEntityFrameworkCoreTestModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Further.Operation.Operations
 {
-    public class EfCoreOperationStoreTest : OperationStoreTest<OperationEntityFrameworkCoreTestModule>
+    public class EfCoreOperationSaveTest : OperationSaveTest<OperationEntityFrameworkCoreTestModule>
     {
     }
 }

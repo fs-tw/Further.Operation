@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FluentResults;
+using Further.Abp.Operation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,13 +14,12 @@ namespace Further.Operation.Operations
         where TStartupModule : IAbpModule
     {
         private readonly IOperationAppService operationAppService;
-
-        private readonly TestOperationStoreManager testOperationStoreManager;
+        private readonly IOperationProvider operationProvider;
 
         public OperationAppServiceTest()
         {
             operationAppService = GetRequiredService<IOperationAppService>();
-            testOperationStoreManager = GetRequiredService<TestOperationStoreManager>();
+            operationProvider = GetRequiredService<IOperationProvider>();
         }
 
 
@@ -31,10 +32,9 @@ namespace Further.Operation.Operations
                 SkipCount = 0
             };
 
-            //await testOperationStoreManager.SaveAsync();
-            await testOperationStoreManager.SaveAsync();
+            await CreateTestOperation();
 
-            Task.Delay(6000).Wait();
+            Task.Delay(8000).Wait();
 
             var result = await operationAppService.GetListAsync(input);
 
@@ -44,9 +44,9 @@ namespace Further.Operation.Operations
         [Fact]
         public async Task GetAsync()
         {
-            var operationId = await testOperationStoreManager.SaveAsync();
+            var operationId = await CreateTestOperation();
 
-            Task.Delay(6000).Wait();
+            Task.Delay(8000).Wait();
 
             var result = await operationAppService.GetAsync(operationId);
 
@@ -57,15 +57,34 @@ namespace Further.Operation.Operations
         [Fact]
         public async Task GetOwnerAsync()
         {
-            var test = await testOperationStoreManager.SaveOwnerAsync();
+            var test = await CreateTestOperation();
 
-            Task.Delay(6000).Wait();
+            Task.Delay(8000).Wait();
 
-            var result = await operationAppService.GetAsync(test.OpenInfoId);
+            var result = await operationAppService.GetAsync(test);
 
             Assert.NotNull(result);
-            Assert.Equal(test.OpenInfoId, result.Id);
+            Assert.Equal(test, result.Id);
             Assert.Equal(1, result.OperationOwners.Count);
+        }
+
+        protected async Task<Guid> CreateTestOperation()
+        {
+            var operationId = Guid.NewGuid();
+
+            await operationProvider.ModifyOperationAsync(operationId, operationInfo =>
+            {
+                operationInfo.OperationId = operationId.ToString();
+                operationInfo.OperationName = "TestOperation";
+                operationInfo.Result.WithSuccess(new Success("OperationStore保存成功"));
+                operationInfo.Owners.Add(new OperationOwnerInfo
+                {
+                    EntityType = "TestOperationType",
+                    EntityId = Guid.NewGuid()
+                });
+            });
+
+            return operationId;
         }
     }
 }
