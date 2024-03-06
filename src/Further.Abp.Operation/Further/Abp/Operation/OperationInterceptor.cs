@@ -21,103 +21,103 @@ namespace Further.Abp.Operation
 
         public override async Task InterceptAsync(IAbpMethodInvocation invocation)
         {
-            if (!OperationHelper.IsOperationMethod(invocation.Method, out var operationScopeAttribute))
-            {
-                await invocation.ProceedAsync();
-                return;
-            }
+            //if (!OperationHelper.IsOperationMethod(invocation.Method, out var operationScopeAttribute))
+            //{
+            //    await invocation.ProceedAsync();
+            //    return;
+            //}
 
-            using (var scope = serviceScopeFactory.CreateScope())
-            {
-                var operationScopeProvider = scope.ServiceProvider.GetRequiredService<IOperationScopeProvider>();
+            //using (var scope = serviceScopeFactory.CreateScope())
+            //{
+            //    var operationScopeProvider = scope.ServiceProvider.GetRequiredService<IOperationScopeProvider>();
 
-                var value = CreateValue(operationScopeAttribute);
-                var options = CreateOptions(operationScopeAttribute);
+            //    var value = CreateValue(operationScopeAttribute);
+            //    var options = CreateOptions(operationScopeAttribute);
 
-                if (operationScopeProvider.TryBeginReserved(OperationScope.OperationScopeReservationName, options, value))
-                {
-                    await ProceedByOperationInfoAsync(invocation, operationScopeProvider);
+            //    if (operationScopeProvider.TryBeginReserved(OperationScope.OperationScopeReservationName, options, value))
+            //    {
+            //        await ProceedByOperationInfoAsync(invocation, operationScopeProvider);
 
-                    return;
-                }
+            //        return;
+            //    }
 
-                using (var operationScope = operationScopeProvider.Begin(options, value))
-                {
-                    try
-                    {
-                        await ProceedByOperationInfoAsync(invocation, operationScopeProvider);
-                    }
-                    finally
-                    {
-                        await operationScope.CompleteAsync();
-                    }
-                }
-            }
+            //    using (var operationScope = operationScopeProvider.Begin(options, value))
+            //    {
+            //        try
+            //        {
+            //            await ProceedByOperationInfoAsync(invocation, operationScopeProvider);
+            //        }
+            //        finally
+            //        {
+            //            await operationScope.CompleteAsync();
+            //        }
+            //    }
+            //}
         }
 
-        private async Task ProceedByOperationInfoAsync(IAbpMethodInvocation invocation, IOperationScopeProvider operationScopeProvider)
-        {
-            try
-            {
-                var operationInfoAttrs = OperationHelper.GetOperationInfoAttributes(invocation.Method);
+        //private async Task ProceedByOperationInfoAsync(IAbpMethodInvocation invocation, IOperationScopeProvider operationScopeProvider)
+        //{
+        //    try
+        //    {
+        //        var operationInfoAttrs = OperationHelper.GetOperationInfoAttributes(invocation.Method);
 
-                await invocation.ProceedAsync();
+        //        await invocation.ProceedAsync();
 
-                var result = invocation.ReturnValue;
+        //        var result = invocation.ReturnValue;
 
-                if (operationScopeProvider.Current != null)
-                {
-                    foreach (var operationInfoAttr in operationInfoAttrs)
-                    {
-                        operationInfoAttr.UpdateOperationInfo(operationScopeProvider.Current, result);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
+        //        if (operationScopeProvider.Current != null)
+        //        {
+        //            foreach (var operationInfoAttr in operationInfoAttrs)
+        //            {
+        //                operationInfoAttr.UpdateOperationInfo(operationScopeProvider.Current, result);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-                if (operationScopeProvider.Current == null) throw;
+        //        if (operationScopeProvider.Current == null) throw;
 
-                var failedOperationInfoAttrs = OperationHelper.GetOperationFailAttributes(invocation.Method);
+        //        var failedOperationInfoAttrs = OperationHelper.GetOperationFailAttributes(invocation.Method);
 
-                if (failedOperationInfoAttrs != null)
-                {
-                    failedOperationInfoAttrs.UpdateOperationInfo(operationScopeProvider.Current, ex);
-                }
+        //        if (failedOperationInfoAttrs != null)
+        //        {
+        //            failedOperationInfoAttrs.UpdateOperationInfo(operationScopeProvider.Current, ex);
+        //        }
 
-                if (failedOperationInfoAttrs == null)
-                {
-                    operationScopeProvider.Current.Result.WithError(ex.Message);
-                }
+        //        if (failedOperationInfoAttrs == null)
+        //        {
+        //            operationScopeProvider.Current.Result.WithError(ex.Message);
+        //        }
 
-                throw;
-            }
-        }
+        //        throw;
+        //    }
+        //}
 
-        private OperationInfoInitializeValue CreateValue(OperationScopeAttribute? operationScopeAttribute)
-        {
-            var value = new OperationInfoInitializeValue();
+        //private OperationInfoInitializeValue CreateValue(OperationScopeAttribute? operationScopeAttribute)
+        //{
+        //    var value = new OperationInfoInitializeValue();
 
-            if (operationScopeAttribute != null)
-            {
-                value.OperationId = operationScopeAttribute.OperationId;
-                value.OperationName = operationScopeAttribute.OperationName;
-            }
+        //    if (operationScopeAttribute != null)
+        //    {
+        //        value.OperationId = operationScopeAttribute.OperationId;
+        //        value.OperationName = operationScopeAttribute.OperationName;
+        //    }
 
-            return value;
-        }
+        //    return value;
+        //}
 
-        private OperationScopeOptions CreateOptions(OperationScopeAttribute? operationScopeAttribute)
-        {
-            var options = new OperationScopeOptions();
+        //private OperationScopeOptions CreateOptions(OperationScopeAttribute? operationScopeAttribute)
+        //{
+        //    var options = new OperationScopeOptions();
 
-            if (operationScopeAttribute != null)
-            {
-                options.EnabledLogger = operationScopeAttribute.EnabledLogger;
-                options.MaxSurvivalTime = operationScopeAttribute.MaxSurvivalTime;
-            }
+        //    if (operationScopeAttribute != null)
+        //    {
+        //        options.EnabledLogger = operationScopeAttribute.EnabledLogger;
+        //        options.MaxSurvivalTime = operationScopeAttribute.MaxSurvivalTime;
+        //    }
 
-            return options;
-        }
+        //    return options;
+        //}
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,16 +12,17 @@ namespace Further.Abp.Operation
 {
     public class OperationTestBase : AbpIntegratedTest<FurtherAbpOperationTestBaseModule>
     {
-        protected readonly IOperationScopeProvider operationScopeProvider;
-
-        public OperationTestBase()
-        {
-            operationScopeProvider = GetRequiredService<IOperationScopeProvider>();
-        }
-
         protected override void SetAbpApplicationCreationOptions(AbpApplicationCreationOptions options)
         {
             options.UseAutofac();
+        }
+
+        protected override void BeforeAddApplication(IServiceCollection services)
+        {
+            var builder = new ConfigurationBuilder();
+            builder.AddJsonFile("appsettings.json", false);
+            builder.AddJsonFile("appsettings.secrets.json", true);
+            services.ReplaceConfiguration(builder.Build());
         }
     }
 }

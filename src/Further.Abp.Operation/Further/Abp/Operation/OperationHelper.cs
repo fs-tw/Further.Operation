@@ -17,7 +17,7 @@ namespace Further.Abp.Operation
             return methodInfo
                 .GetCustomAttributes(true)
                 .OfType<OperationInfoAttributeBase>()
-                .Where(x =>　!(x is OperationFailAttribute))
+                .Where(x => !(x is OperationFailAttribute))
                 .ToList();
         }
 
@@ -26,50 +26,19 @@ namespace Further.Abp.Operation
             return methodInfo.GetCustomAttributes(true).OfType<OperationFailAttribute>().FirstOrDefault();
         }
 
-        public static bool IsOperationMethod(MethodInfo methodInfo, out OperationScopeAttribute? operationAttribute)
+        public static bool IsOperationMethod(MethodInfo methodInfo)
         {
-            var attrs = methodInfo.GetCustomAttributes(true).OfType<OperationScopeAttribute>().ToList();
-
-            if (attrs.Any())
-            {
-                operationAttribute = attrs.First();
-                return operationAttribute.IsEnabled;
-            }
-
-            if (methodInfo.DeclaringType != null)
-            {
-                attrs = methodInfo.DeclaringType.GetCustomAttributes(true).OfType<OperationScopeAttribute>().ToList();
-                if (attrs.Any())
-                {
-                    operationAttribute = attrs.First();
-                    return operationAttribute.IsEnabled;
-                }
-
-                if (typeof(IOperationScopeEnable).GetTypeInfo().IsAssignableFrom(methodInfo.DeclaringType))
-                {
-                    operationAttribute = null;
-                    return true;
-                }
-            }
-
             if (HasOperationInfoAttribute(methodInfo))
             {
-                operationAttribute = null;
                 return true;
             }
 
-            operationAttribute = null;
             return false;
         }
 
         public static bool IsOperationType(TypeInfo typeInfo)
         {
-            if (HasOperationScopeAttribute(typeInfo) || AnyMethodHasOperationkAttribute(typeInfo))
-            {
-                return true;
-            }
-
-            if (typeof(IOperationScopeEnable).GetTypeInfo().IsAssignableFrom(typeInfo))
+            if (AnyMethodHasOperationkAttribute(typeInfo))
             {
                 return true;
             }
@@ -96,12 +65,7 @@ namespace Further.Abp.Operation
         {
             return implementationType
                 .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                .Any(x => HasOperationScopeAttribute(x) || HasOperationInfoAttribute(x));
-        }
-
-        private static bool HasOperationScopeAttribute(MemberInfo methodInfo)
-        {
-            return methodInfo.IsDefined(typeof(OperationScopeAttribute), true);
+                .Any(x => HasOperationInfoAttribute(x));
         }
 
         private static bool HasOperationInfoAttribute(MethodInfo methodInfo)
