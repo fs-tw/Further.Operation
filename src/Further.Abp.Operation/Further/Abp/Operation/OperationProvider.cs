@@ -100,9 +100,21 @@ namespace Further.Abp.Operation
             await distributedCache.RemoveAsync(id.GetCacheKey());
         }
 
+        public virtual async Task RemoveAsync(string id)
+        {
+            await distributedCache.RemoveAsync(id);
+        }
+
         public virtual Task<OperationInfo?> GetAsync(Guid id)
         {
             return Task.FromResult(distributedCache.Get(id.GetCacheKey())?.GetOperationInfo());
+        }
+
+        public async Task<OperationInfo?> GetAsync(string id)
+        {
+            var operationCacheInfo = await distributedCache.GetAsync(id);
+
+            return operationCacheInfo?.GetOperationInfo();
         }
 
         protected virtual async Task<OperationInfo> GetOrCreate(Guid id)
@@ -115,6 +127,10 @@ namespace Further.Abp.Operation
                 operationInfo = new OperationInfo(id);
             }
 
+            var backupKey = id.GetCacheKey().GetOperationBackUpKey();
+
+            await distributedCache.GetAsync(backupKey);
+
             return operationInfo;
         }
 
@@ -123,6 +139,13 @@ namespace Further.Abp.Operation
             await distributedCache.SetAsync(operationInfo.GetCacheKey(), new CacheOperationInfo(operationInfo), new DistributedCacheEntryOptions
             {
                 SlidingExpiration = options.MaxSurvivalTime
+            });
+
+            var backupKey = operationInfo.GetCacheKey().GetOperationBackUpKey();
+
+            await distributedCache.SetAsync(backupKey, new CacheOperationInfo(operationInfo), new DistributedCacheEntryOptions
+            {
+                SlidingExpiration = options.MaxSurvivalTime + TimeSpan.FromSeconds(10)
             });
         }
     }

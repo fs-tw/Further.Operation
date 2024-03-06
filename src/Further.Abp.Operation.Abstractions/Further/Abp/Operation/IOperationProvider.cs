@@ -11,6 +11,10 @@ namespace Further.Abp.Operation
 
         Task<OperationInfo?> GetAsync(Guid id);
 
+        Task<OperationInfo?> GetAsync(string id);
+
         Task RemoveAsync(Guid id);
+
+        Task RemoveAsync(string id);
     }
 }
