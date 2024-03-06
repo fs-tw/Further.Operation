@@ -8,18 +8,25 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Caching;
 using Volo.Abp.DependencyInjection;
+using Volo.Abp.Guids;
 
 namespace Further.Abp.Operation
 {
-    public class OperationProvider : IOperationProvider, ITransientDependency
+    public class OperationProvider : IOperationProvider, ISingletonDependency
     {
+        public Guid? CurrentId => OperationId.Value;
+
         private readonly RedLockFactory redLockFactory;
         private readonly OperationOptions options;
         private readonly ILogger<OperationProvider> logger;
         private readonly IDistributedCache<CacheOperationInfo, string> distributedCache;
+        private readonly IGuidGenerator guidGenerator;
+        private readonly AsyncLocal<Guid?> OperationId;
 
         /// <summary>
         /// 待後續調整jsonSerialization使用，進一步移除CacheOperationInfo這轉換物件
@@ -62,13 +69,31 @@ namespace Further.Abp.Operation
             ILogger<OperationProvider> logger,
             IOptions<OperationOptions> options,
             IDistributedCache<CacheOperationInfo, string> distributedCache,
-            RedisConnectorHelper redisConnector)
+            RedisConnectorHelper redisConnector,
+            IGuidGenerator guidGenerator)
         {
             var redis = redisConnector.GetConntction();
             this.redLockFactory = RedLockFactory.Create(new List<RedLockMultiplexer> { redis });
             this.options = options.Value;
             this.logger = logger;
             this.distributedCache = distributedCache;
+            this.guidGenerator = guidGenerator;
+            OperationId = new AsyncLocal<Guid?>();
+        }
+
+        public virtual void Initialize(Guid? id = null)
+        {
+            OperationId.Value = id ?? guidGenerator.Create();
+        }
+
+        public virtual async Task ModifyOperationAsync(Action<OperationInfo> action, TimeSpan? expiry = null, TimeSpan? wait = null, TimeSpan? retry = null)
+        {
+            if (CurrentId == null)
+            {
+                throw new UserFriendlyException("Not Initialize");
+            }
+
+            await ModifyOperationAsync((Guid)CurrentId!, action, expiry, wait, retry);
         }
 
         public virtual async Task ModifyOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? expiry = null, TimeSpan? wait = null, TimeSpan? retry = null)
