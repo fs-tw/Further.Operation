@@ -23,7 +23,11 @@ namespace Further.Operation.Operations
 
             if (!channel.ToString().Contains("CacheOperationInfo")) return;
 
-            var key = (channel.ToString().Split(',')[1]).Split(new[] { ':' }, 2)[1];
+            var startIndex = channel.ToString().IndexOf("Operation:");
+
+            if (startIndex == -1) return;
+
+            var key = channel.ToString().Substring(startIndex);
 
             await saveOperationProvider.SaveExpiredCacheOperation(key);
         }
