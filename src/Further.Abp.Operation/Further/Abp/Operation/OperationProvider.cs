@@ -88,12 +88,7 @@ namespace Further.Abp.Operation
 
         public virtual async Task ModifyOperationAsync(Action<OperationInfo> action, TimeSpan? expiry = null, TimeSpan? wait = null, TimeSpan? retry = null)
         {
-            if (CurrentId == null)
-            {
-                throw new UserFriendlyException("Not Initialize");
-            }
-
-            await ModifyOperationAsync((Guid)CurrentId!, action, expiry, wait, retry);
+            await ModifyOperationAsync(CurrentId ?? guidGenerator.Create(), action, expiry, wait, retry);
         }
 
         public virtual async Task ModifyOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? expiry = null, TimeSpan? wait = null, TimeSpan? retry = null)
