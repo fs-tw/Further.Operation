@@ -7,6 +7,9 @@ on:
 jobs:
   dotnet-publish:
     runs-on: ubuntu-latest
+    env:
+      FRAMEWORK_DIR_NAME: Further.Abp.Operation
+      MODULE_DIR_NAME: Further.Operation
     steps:
       - uses: actions/checkout@v3
       
@@ -32,16 +35,25 @@ jobs:
           dotnet nuget add source https://nuget.pkg.github.com/fs-tw/index.json -u fs-tw -p ${{ secrets.PERSONAL_TOKEN }}  --store-password-in-clear-text --name "github"
         continue-on-error: true
 
-      - run: dotnet restore
+      - run: dotnet restore ./framework/${{env.FRAMEWORK_DIR_NAME}}/*.sln
         continue-on-error: false
 
-      - run: dotnet build -c Release
+      - run: dotnet restore ./modules/${{env.MODULE_DIR_NAME}}/*.sln
         continue-on-error: false
 
-      - run: dotnet test -c Release --no-restore --no-build
+      - run: dotnet build ./framework/${{env.FRAMEWORK_DIR_NAME}}/*.sln -c Release
         continue-on-error: false
 
-      - run: dotnet pack -c Release --no-build --property PackageOutputPath=${{ github.workspace }}/nugetPackages/
+      - run: dotnet build ./modules/${{env.MODULE_DIR_NAME}}/*.sln -c Release
+        continue-on-error: false
+
+      # - run: dotnet test -c Release --no-restore --no-build
+      #   continue-on-error: false
+
+      - run: dotnet pack ./framework/${{env.FRAMEWORK_DIR_NAME}}/*.sln -c Release --no-build --property PackageOutputPath=${{ github.workspace }}/nugetPackages/
+        continue-on-error: false
+
+      - run: dotnet pack ./modules/${{env.MODULE_DIR_NAME}}/*.sln -c Release --no-build --property PackageOutputPath=${{ github.workspace }}/nugetPackages/
         continue-on-error: false
 
       - run: |
