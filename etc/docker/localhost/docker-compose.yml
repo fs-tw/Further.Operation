@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:    
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --notify-keyspace-events Egx
+    networks:
+      - abp-network  
+    healthcheck:
+      test: ["CMD", "redis-cli","ping"]     
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+      - HTTP_USER=root
+      - HTTP_PASSWORD=qwerty
+    ports:
+      - 8081:8081
+    networks:
+      - abp-network  
+    depends_on:
+      - redis 
+
+volumes:
+  sqldata:
+    name: portal_sqldata
+networks:
+  abp-network:
+    name: portal-network
+    driver: bridge
