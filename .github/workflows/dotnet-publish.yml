@@ -101,9 +101,9 @@ jobs:
           token: ${{ secrets.LINE_TOKEN }}
           message: |
 
-            fs-tw/Further : dotnet-publish
+            fs-tw/${{GITHUB_REPOSITORY##*/}} : dotnet-publish
             Actor: ${{ github.actor }}
-            NG : fs-tw/Further dotnet-publish fail
+            NG : fs-tw/${{GITHUB_REPOSITORY##*/}} dotnet-publish fail
 
       - uses: louis70109/line-notify-action@master
         if: steps.publish.outcome == 'success'
@@ -111,6 +111,6 @@ jobs:
           token: ${{ secrets.LINE_TOKEN }}
           message: |
 
-            fs-tw/Further : dotnet-publish
+            fs-tw/${{GITHUB_REPOSITORY##*/}} : dotnet-publish
             Actor: ${{ github.actor }}
-            PASS : fs-tw/Further dotnet-publish success
+            PASS : fs-tw/${{GITHUB_REPOSITORY##*/}} dotnet-publish success
