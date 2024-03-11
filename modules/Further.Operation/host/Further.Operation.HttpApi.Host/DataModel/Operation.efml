@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<efcore context-namespace="Further.Operation.EntityFrameworkCore" namespace="Further.Operation" p1:name="OperationDbContext" p1:Guid="92989c6e-ab90-4621-a140-0e236e911d25" p1:ContextBase="Volo.Abp.EntityFrameworkCore.AbpDbContext&lt;%type name%&gt;, I%type name%" xmlns:p1="http://devart.com/schemas/EntityDeveloper/1.0">
+  <p1:Attributes>
+    <p1:Attribute Name="FS.EntityFirst.Attributes.SolutionAttribute" Assembly="FS.EntityFirst, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <p1:AttributeConstructor />
+      <p1:Properties>
+        <p1:PropertyValue Name="CompanyName" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+          <string>Further</string>
+        </p1:PropertyValue>
+        <p1:PropertyValue Name="ProjectName" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+          <string>Operation</string>
+        </p1:PropertyValue>
+      </p1:Properties>
+    </p1:Attribute>
+    <p1:Attribute Name="FS.EntityFirst.CodeRegions.CodeRegionAttribute" Assembly="FS.EntityFirst, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <p1:AttributeConstructor />
+      <p1:Properties>
+        <p1:PropertyValue Name="CodeRegionContent" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+          <string>cHVibGljIHBhcnRpYWwgY2xhc3MgT3BlcmF0aW9uRGJDb250ZXh0IDogVm9sby5BYnAuRW50aXR5RnJhbWV3b3JrQ29yZS5BYnBEYkNvbnRleHQ8T3BlcmF0aW9uRGJDb250ZXh0PiwgSU9wZXJhdGlvbkRiQ29udGV4dA==</string>
+        </p1:PropertyValue>
+        <p1:PropertyValue Name="CodeRegionName" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+          <string>EFCore.DbContext Declare</string>
+        </p1:PropertyValue>
+      </p1:Properties>
+    </p1:Attribute>
+    <p1:Attribute Name="FS.EntityFirst.CodeRegions.CodeRegionAttribute" Assembly="FS.EntityFirst, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <p1:AttributeConstructor />
+      <p1:Properties>
+        <p1:PropertyValue Name="CodeRegionContent" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+          <string>cHVibGljIHBhcnRpYWwgaW50ZXJmYWNlIElPcGVyYXRpb25EYkNvbnRleHQgOiBJRWZDb3JlRGJDb250ZXh0</string>
+        </p1:PropertyValue>
+        <p1:PropertyValue Name="CodeRegionName" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+          <string>EFCore.IDbContext Declare</string>
+        </p1:PropertyValue>
+      </p1:Properties>
+    </p1:Attribute>
+  </p1:Attributes>
+  <class name="$EnumTypes">
+    <EnumType Name="AuditType" IsExternal="true" class="AuditType" p1:Guid="b59bb284-046f-4b10-a67c-93e2420ca25a">
+      <Member Name="None" Value="0" p1:Guid="2e06a19a-3677-4f5a-abfa-93c29e3eba23" />
+      <Member Name="FullAudited" Value="1" p1:Guid="706a5cb2-6bad-4dc7-9aec-4596734103ac" />
+      <Member Name="Audited" Value="2" p1:Guid="3867c008-d6af-43c9-835d-f77497fd4682" />
+      <Member Name="CreationAudited" Value="4" p1:Guid="c7bc83bc-ebb0-4667-bf7d-4eedb7aed5f5" />
+    </EnumType>
+    <EnumType Name="Multiplicity" IsExternal="true" class="Multiplicity" p1:Guid="022accb8-d768-4d52-b57a-c0a8f488189a">
+      <Member Name="Many" Value="0" p1:Guid="7ea91b96-8d23-435d-825e-b2101910f63e" />
+      <Member Name="ZeroOrOne" Value="1" p1:Guid="8918ade2-bd84-417f-8ff2-ab46bfd61ef7" />
+      <Member Name="One" Value="2" p1:Guid="f007a9be-fb8a-49f9-bdcc-b09bb5349f1b" />
+    </EnumType>
+  </class>
+  <class name="Further.Operation.Operations.Operation" entity-set="Operations" p1:Guid="31da258e-300a-4d43-a0ea-861b4ffc8e0c" p1:EntityDtoBase="FullAuditedEntityDto&lt;Guid&gt;" p1:EntityBase="FullAuditedAggregateRoot&lt;Guid&gt;">
+    <p1:Attributes>
+      <p1:Attribute Name="FS.EntityFirst.Attributes.EntityAttribute" Assembly="FS.EntityFirst, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <p1:AttributeConstructor />
+        <p1:Properties>
+          <p1:PropertyValue Name="IsAggregateRoot" Type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <boolean>true</boolean>
+          </p1:PropertyValue>
+          <p1:PropertyValue Name="IsGenericEntity" Type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <boolean>true</boolean>
+          </p1:PropertyValue>
+          <p1:PropertyValue Name="IsMultiTenant" Type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <boolean>true</boolean>
+          </p1:PropertyValue>
+          <p1:PropertyValue Name="AuditType" Type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <int>1</int>
+          </p1:PropertyValue>
+          <p1:PropertyValue Name="Namespace" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <string>Operations</string>
+          </p1:PropertyValue>
+          <p1:PropertyValue Name="IsExternal" Type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <boolean>false</boolean>
+          </p1:PropertyValue>
+        </p1:Properties>
+      </p1:Attribute>
+      <p1:Attribute Name="FS.EntityFirst.CodeRegions.CodeRegionAttribute" Assembly="FS.EntityFirst, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <p1:AttributeConstructor />
+        <p1:Properties>
+          <p1:PropertyValue Name="CodeRegionContent" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <string>cHVibGljIHN0cmluZyBPcGVyYXRpb25JZCB7IGdldDsgc2V0OyB9DQogICAgDQogICAgICAgICAgICBwdWJsaWMgc3RyaW5nIE9wZXJhdGlvbk5hbWUgeyBnZXQ7IHNldDsgfQ0KICAgIA0KICAgICAgICAgICAgcHVibGljIHN0cmluZyBSZXN1bHQgeyBnZXQ7IHNldDsgfQ0KICAgIA0KICAgICAgICAgICAgcHVibGljIGJvb2wgSXNTdWNjZXNzIHsgZ2V0OyBzZXQ7IH0NCiAgICANCiAgICAgICAgICAgIHB1YmxpYyBpbnQgRXhlY3V0aW9uRHVyYXRpb24geyBnZXQ7IHNldDsgfQ==</string>
+          </p1:PropertyValue>
+          <p1:PropertyValue Name="CodeRegionName" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <string>DataTransferObject.EntityDto Create</string>
+          </p1:PropertyValue>
+        </p1:Properties>
+      </p1:Attribute>
+      <p1:Attribute Name="FS.EntityFirst.CodeRegions.CodeRegionAttribute" Assembly="FS.EntityFirst, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <p1:AttributeConstructor />
+        <p1:Properties>
+          <p1:PropertyValue Name="CodeRegionContent" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <string>cHVibGljIHN0cmluZyBPcGVyYXRpb25JZCB7IGdldDsgc2V0OyB9DQogICAgDQogICAgICAgICAgICBwdWJsaWMgc3RyaW5nIE9wZXJhdGlvbk5hbWUgeyBnZXQ7IHNldDsgfQ0KICAgIA0KICAgICAgICAgICAgcHVibGljIHN0cmluZyBSZXN1bHQgeyBnZXQ7IHNldDsgfQ0KICAgIA0KICAgICAgICAgICAgcHVibGljIGJvb2wgSXNTdWNjZXNzIHsgZ2V0OyBzZXQ7IH0NCiAgICANCiAgICAgICAgICAgIHB1YmxpYyBpbnQgRXhlY3V0aW9uRHVyYXRpb24geyBnZXQ7IHNldDsgfQ==</string>
+          </p1:PropertyValue>
+          <p1:PropertyValue Name="CodeRegionName" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <string>DataTransferObject.EntityDto Update</string>
+          </p1:PropertyValue>
+        </p1:Properties>
+      </p1:Attribute>
+    </p1:Attributes>
+    <id name="Id" type="Guid" shadow="True" p1:ValidateRequired="true" p1:Guid="94e5bbf1-5cea-48b4-8266-0901c69fc113" p1:GenerateDTO="False">
+      <column name="" />
+    </id>
+    <property name="OperationId" type="String" p1:nullable="True" p1:ValidateRequired="false" p1:Guid="1394c450-902c-4a29-b314-1b51c7aa4a54">
+      <column name="" />
+    </property>
+    <property name="OperationName" type="String" p1:nullable="True" p1:ValidateRequired="false" p1:Guid="1b8be10f-18a8-418f-9d95-d70c64b7fb9a">
+      <column name="" />
+    </property>
+    <property name="Result" type="String" p1:ValidateRequired="true" p1:Guid="e868f83b-c2f3-4f09-968b-d598948ef2c0">
+      <column name="" />
+    </property>
+    <property name="IsSuccess" type="Boolean" p1:ValidateRequired="true" p1:Guid="ea582a3b-5bd2-4838-8eed-7a7a6a8a3d33">
+      <column name="" />
+    </property>
+    <property name="ExecutionDuration" type="Int32" p1:ValidateRequired="true" p1:Guid="102bf8ff-846c-43e6-81b8-9f2b0fb215de">
+      <column name="" />
+    </property>
+    <property name="TenantId" type="Guid" p1:nullable="True" p1:ValidateRequired="false" p1:Guid="aeb1cb1a-b666-49cb-9a58-ebf43b0207df" p1:GenerateDTO="False">
+      <column name="" />
+    </property>
+  </class>
+  <class name="Further.Operation.Operations.OperationOwner" entity-set="OperationOwners" p1:Guid="6507520d-c1f5-4998-aa71-5c125fa0e78f" p1:EntityDtoBase="FullAuditedEntityDto&lt;Guid&gt;" p1:EntityBase="FullAuditedEntity&lt;Guid&gt;">
+    <p1:Attributes>
+      <p1:Attribute Name="FS.EntityFirst.Attributes.EntityAttribute" Assembly="FS.EntityFirst, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <p1:AttributeConstructor />
+        <p1:Properties>
+          <p1:PropertyValue Name="IsAggregateRoot" Type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <boolean>false</boolean>
+          </p1:PropertyValue>
+          <p1:PropertyValue Name="IsGenericEntity" Type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <boolean>true</boolean>
+          </p1:PropertyValue>
+          <p1:PropertyValue Name="IsMultiTenant" Type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <boolean>true</boolean>
+          </p1:PropertyValue>
+          <p1:PropertyValue Name="AuditType" Type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <int>1</int>
+          </p1:PropertyValue>
+          <p1:PropertyValue Name="Namespace" Type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <string>Operations</string>
+          </p1:PropertyValue>
+          <p1:PropertyValue Name="IsExternal" Type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+            <boolean>false</boolean>
+          </p1:PropertyValue>
+        </p1:Properties>
+      </p1:Attribute>
+    </p1:Attributes>
+    <id name="Id" type="Guid" shadow="True" p1:ValidateRequired="true" p1:Guid="8bd7cf7f-ec26-4854-ae68-9eb2cb88e7f6" p1:GenerateDTO="False">
+      <column name="" />
+    </id>
+    <property name="OperationId" type="Guid" p1:ValidateRequired="true" p1:Guid="e077139c-b934-43dc-9e51-4c93b6229e18">
+      <column name="" />
+    </property>
+    <property name="EntityType" type="String" p1:ValidateRequired="true" p1:Guid="b741315f-94c7-4ac4-a8b0-fa2090cdee5e">
+      <column name="" />
+    </property>
+    <property name="EntityId" type="Guid" p1:ValidateRequired="true" p1:Guid="64018081-baa9-4981-be7c-f0e9a53257fb">
+      <column name="" />
+    </property>
+    <property name="MetaData" type="String" p1:ValidateRequired="true" p1:Guid="74bd755a-6fae-457f-96b7-f9e87c3c9803">
+      <column name="" />
+    </property>
+    <property name="TenantId" type="Guid" p1:nullable="True" p1:ValidateRequired="false" p1:Guid="0108ecdf-6105-4816-a823-449dd19db2a5" p1:GenerateDTO="False">
+      <column name="" />
+    </property>
+  </class>
+  <associations>
+    <association name="Operation_OperationOwner" cardinality="OneToMany" p1:Guid="34948962-73ba-43a8-9186-1a9b66a74e0c">
+      <end1 multiplicity="One" name="Operation" class="OperationOwner" relation-class="Operation" generate="False" constrained="True" lazy="False" p1:Guid="b28a736e-c067-46e2-b844-819df58fe4fc">
+        <property name="Id" />
+      </end1>
+      <end2 multiplicity="Many" name="OperationOwners" class="Operation" relation-class="OperationOwner" lazy="False" p1:Guid="fbb70c7e-d155-4f9f-b8cb-f8bcfb0a52c1">
+        <property name="OperationId" />
+      </end2>
+    </association>
+  </associations>
+</efcore>
