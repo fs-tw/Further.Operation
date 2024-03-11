@@ -6,7 +6,7 @@ namespace Further.Abp.Operation
 {
     public class OperationOptions
     {
-        public string Configuration { get; set; } = "127.0.0.1";
+        public bool IsEnableSubscribe { get; set; } = true;
         public TimeSpan DefaultExpiry { get; set; } = TimeSpan.FromSeconds(5);
 
         public TimeSpan DefaultWait { get; set; } = TimeSpan.FromSeconds(2);

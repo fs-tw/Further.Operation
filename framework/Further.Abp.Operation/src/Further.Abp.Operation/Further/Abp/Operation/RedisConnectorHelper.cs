@@ -40,6 +40,8 @@ namespace Further.Abp.Operation
 
         public void Subscribe()
         {
+            if (!options.IsEnableSubscribe) return;
+
             var subscriber = Connection.GetSubscriber();
 
             Connection.GetServer(Connection.GetEndPoints().Single())

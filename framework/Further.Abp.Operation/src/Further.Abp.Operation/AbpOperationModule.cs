@@ -17,6 +17,12 @@ public class AbpOperationModule : AbpModule
     //    context.Services.OnRegistered(OperationInterceptorRegistrar.RegisterIfNeeded);
     //}
 
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        var configuration = context.Services.GetConfiguration();
+        Configure<OperationOptions>(configuration.GetSection("Operation"));
+    }
+
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
         var redisService = context.ServiceProvider.GetRequiredService<RedisConnectorHelper>();
