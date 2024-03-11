@@ -1,0 +1,74 @@
+name: "dotnet-build-and-test"
+on:
+  pull_request:
+    branches: [ develop ]
+  push:
+    branches: [ develop ]
+jobs:
+  notify-start:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: louis70109/line-notify-action@master
+      with:
+        token: r79j54p2crlTmuQChPt2grEhNYnI5351Hpk1J9idGZJ
+        message: |
+          
+          fs-tw/Further : dotnet-build-and-test
+          Actor: ${{ github.actor }}
+          Start
+
+  dotnet-build-and-test:
+    runs-on: ${{ fromJSON('["ubuntu-latest", "windows-latest"]')[0] }}
+    needs: [notify-start]
+    outputs:
+      outcome: ${{ steps.test.outcome }}
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-dotnet@master
+      with:
+        dotnet-version: 7.0.102
+    
+
+    - id: installLocaldb
+      if: ${{ runner.os == 'Windows' }}
+      uses: potatoqualitee/mssqlsuite@v1.7
+      with:
+        install: localdb
+
+    - id: nuget
+      shell: pwsh
+      run: |
+        dotnet nuget add source https://nuget.pkg.github.com/fs-tw/index.json -u fs-tw -p ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name "github"
+      continue-on-error: false
+
+    - id: restore
+      shell: pwsh
+      run: |
+        dotnet restore
+      continue-on-error: false   
+    - id: build
+      shell: pwsh
+      run: |
+        dotnet build
+      continue-on-error: false      
+    - id: test
+      shell: pwsh
+      run: |
+        dotnet test
+      continue-on-error: false   
+
+  notify-end:
+    runs-on: ubuntu-latest
+    needs: [dotnet-build-and-test]
+    steps:
+    - uses: louis70109/line-notify-action@master
+      if : ${{ needs.dotnet-build-and-test.outputs.outcome == 'success' }}
+      with:
+        token: r79j54p2crlTmuQChPt2grEhNYnI5351Hpk1J9idGZJ
+        message: |
+          
+          fs-tw/Further : dotnet-build-and-test
+          Actor: ${{ github.actor }}
+          Success
+          
