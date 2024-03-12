@@ -13,20 +13,20 @@ namespace Further.Operation.Operations
 {
     public class SaveOperationProvider : ITransientDependency
     {
-        private readonly IOperationProvider operationProvider;
+        private readonly IDistributedCache<OperationInfo, string> distributedCache;
         private readonly IOperationRepository operationRepository;
         private readonly OperationManager operationManager;
         private readonly IUnitOfWorkManager unitOfWorkManager;
         private readonly ICurrentTenant currentTenant;
 
         public SaveOperationProvider(
-            IOperationProvider operationProvider,
+            IDistributedCache<OperationInfo, string> distributedCache,
             IOperationRepository operationRepository,
             OperationManager operationManager,
             IUnitOfWorkManager unitOfWorkManager,
             ICurrentTenant currentTenant)
         {
-            this.operationProvider = operationProvider;
+            this.distributedCache = distributedCache;
             this.operationRepository = operationRepository;
             this.operationManager = operationManager;
             this.unitOfWorkManager = unitOfWorkManager;
@@ -37,11 +37,11 @@ namespace Further.Operation.Operations
         {
             var backKey = key.GetOperationBackUpKey();
 
-            var operationInfo = await operationProvider.GetAsync(backKey);
+            var operationInfo = await distributedCache.GetAsync(backKey);
 
             if (operationInfo == null) return;
 
-            await operationProvider.RemoveAsync(backKey);
+            await distributedCache.RemoveAsync(backKey);
 
             var operation = await operationManager.CreateAsync(
                 id: operationInfo.Id,

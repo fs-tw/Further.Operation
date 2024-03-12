@@ -19,7 +19,7 @@ namespace Further.Abp.Operation
         }
 
         [Fact]
-        public async Task ModifyOperationAsync()
+        public async Task CreateOperationAsync()
         {
             var operationId = Guid.NewGuid();
             var message = "Test";
@@ -31,7 +31,7 @@ namespace Further.Abp.Operation
             };
 
             // 執行修改操作
-            await operationProvider.ModifyOperationAsync(operationId, action);
+            await operationProvider.CreateOperationAsync(operationId, action);
 
             // 驗證
             var finalOperationInfo = await operationProvider.GetAsync(operationId);
@@ -39,10 +39,15 @@ namespace Further.Abp.Operation
         }
 
         [Fact]
-        public async Task ModifyOperationAsync_MultipleThreads()
+        public async Task UpdateOperationAsync_MultipleThreads()
         {
             var operationId = Guid.NewGuid();
             var random = new Random();
+
+            await operationProvider.CreateOperationAsync(operationId, o =>
+            {
+                o.OperationId = "UpdateOperationAsync_MultipleThreads";
+            });
 
             // 定義修改操作
             Action<OperationInfo> action = (op) =>
@@ -55,12 +60,12 @@ namespace Further.Abp.Operation
 
             for (int i = 0; i < numberOfTasks; i++)
             {
-                // 每個任務都調用 ModifyOperationAsync
+                // 每個任務都調用 CreateOperationAsync
                 tasks.Add(Task.Run(async () =>
                 {
                     var delay = random.Next(50, 151);
                     await Task.Delay(delay);
-                    await operationProvider.ModifyOperationAsync(operationId, action);
+                    await operationProvider.UpdateOperationAsync(operationId, action);
                 }));
             }
 
@@ -73,11 +78,16 @@ namespace Further.Abp.Operation
         }
 
         [Fact]
-        public async Task ModifyOperationAsync_MultipleThreads_NotOverAdd()
+        public async Task UpdateOperationAsync_MultipleThreads_NotOverAdd()
         {
             var operationId = Guid.NewGuid();
             var maxNumberOfReasons = 10;
             var random = new Random();
+
+            await operationProvider.CreateOperationAsync(operationId, o =>
+            {
+                o.OperationId = "UpdateOperationAsync_MultipleThreads_NotOverAdd";
+            });
 
             // 定義修改操作
             Action<OperationInfo> action = (op) =>
@@ -94,12 +104,12 @@ namespace Further.Abp.Operation
 
             for (int i = 0; i < numberOfTasks; i++)
             {
-                // 每個任務都調用 ModifyOperationAsync
+                // 每個任務都調用 CreateOperationAsync
                 tasks.Add(Task.Run(async () =>
                 {
                     var delay = random.Next(50, 151);
                     await Task.Delay(delay);
-                    await operationProvider.ModifyOperationAsync(operationId, action);
+                    await operationProvider.UpdateOperationAsync(operationId, action);
                 }));
             }
 
@@ -112,12 +122,17 @@ namespace Further.Abp.Operation
         }
 
         [Fact]
-        public async Task ModifyOperationAsync_MultipleThreads_NotOverAdd_WithCurrentId()
+        public async Task UpdateOperationAsync_MultipleThreads_NotOverAdd_WithCurrentId()
         {
             operationProvider.Initialize();
             var operationId = operationProvider.CurrentId;
             var maxNumberOfReasons = 10;
             var random = new Random();
+
+            await operationProvider.CreateOperationAsync((Guid)operationId, o =>
+            {
+                o.OperationId = "UpdateOperationAsync_MultipleThreads_NotOverAdd_WithCurrentId";
+            });
 
             // 定義修改操作
             Action<OperationInfo> action = (op) =>
@@ -139,7 +154,7 @@ namespace Further.Abp.Operation
                 {
                     var delay = random.Next(50, 151);
                     await Task.Delay(delay);
-                    await operationProvider.ModifyOperationAsync(action);
+                    await operationProvider.UpdateOperationAsync((Guid)operationId, action);
                 }));
             }
 
@@ -187,6 +202,22 @@ namespace Further.Abp.Operation
 
             Assert.Equal(operationProvider.CurrentId, id1);
             Assert.True(id2);
+        }
+
+        [Fact]
+        public async Task OperationGetListIdAsync()
+        {
+            var operationId = Guid.NewGuid();
+
+            await operationProvider.CreateOperationAsync(operationId, operationInfo =>
+            {
+                operationInfo.OperationId = operationId.ToString();
+            });
+
+            var ids = await operationProvider.GetListOperationIdAsync();
+
+            Assert.NotNull(ids);
+            Assert.Contains(operationId, ids);
         }
     }
 }

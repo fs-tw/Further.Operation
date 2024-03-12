@@ -30,7 +30,7 @@ namespace Further.Operation.Operations
         {
             var operationId = Guid.NewGuid();
 
-            await operationProvider.ModifyOperationAsync(operationId, operationInfo =>
+            await operationProvider.CreateOperationAsync(operationId, operationInfo =>
             {
                 operationInfo.OperationId = operationId.ToString();
                 operationInfo.OperationName = "TestOperation";
@@ -52,6 +52,29 @@ namespace Further.Operation.Operations
             Assert.Equal(
                 result.Successes.First().Message,
                 "OperationStore保存成功");
+        }
+
+        [Fact]
+        public async Task OperationGetListAsync()
+        {
+            var operationId = Guid.NewGuid();
+
+            await operationProvider.CreateOperationAsync(operationId, operationInfo =>
+            {
+                operationInfo.OperationId = operationId.ToString();
+                operationInfo.OperationName = "TestOperation";
+                operationInfo.Result.WithSuccess(new Success("OperationStore保存成功"));
+                operationInfo.Owners.Add(new OperationOwnerInfo
+                {
+                    EntityType = "TestOperationType",
+                    EntityId = Guid.NewGuid()
+                });
+            });
+
+            var ids = await operationProvider.GetListOperationIdAsync();
+
+            Assert.NotNull(ids);
+            Assert.Contains(operationId, ids);
         }
     }
 }

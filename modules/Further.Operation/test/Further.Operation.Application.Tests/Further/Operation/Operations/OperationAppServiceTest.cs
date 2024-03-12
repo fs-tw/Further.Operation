@@ -72,7 +72,7 @@ namespace Further.Operation.Operations
         {
             var operationId = Guid.NewGuid();
 
-            await operationProvider.ModifyOperationAsync(operationId, operationInfo =>
+            await operationProvider.CreateOperationAsync(operationId, operationInfo =>
             {
                 operationInfo.OperationId = operationId.ToString();
                 operationInfo.OperationName = "TestOperation";
