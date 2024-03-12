@@ -37,5 +37,6 @@ public class AbpOperationModule : AbpModule
         var redisService = context.ServiceProvider.GetRequiredService<RedisConnectorHelper>();
         redisService.Initialize();
         redisService.Subscribe();
+        redisService.ReSubscribe();
     }
 }

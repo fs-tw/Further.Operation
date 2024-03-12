@@ -31,6 +31,7 @@ namespace Further.Abp.Operation
         private readonly IGuidGenerator guidGenerator;
         private readonly AsyncLocal<Guid?> OperationId;
         private readonly IDatabase db;
+        private ConnectionMultiplexer redis;
 
         public OperationProvider(
             ILogger<OperationProvider> logger,
@@ -41,6 +42,7 @@ namespace Further.Abp.Operation
             IGuidGenerator guidGenerator)
         {
             var redis = redisConnector.GetConntction();
+            this.redis = redis;
             this.db = redis.GetDatabase();
             this.redLockFactory = RedLockFactory.Create(new List<RedLockMultiplexer> { redis });
             this.options = options.Value;
@@ -61,6 +63,12 @@ namespace Further.Abp.Operation
             var expiryTime = options.DefaultExpiry;
             var waitTime = options.DefaultWait;
             var retryTime = options.DefaultRetry;
+
+            if (!redis.IsConnected)
+            {
+                logger.LogWarning("Redis connection is down, skipping lock acquisition.");
+                return;
+            }
 
 
             using (var redLock = await redLockFactory.CreateLockAsync(id.ToString(), expiryTime, waitTime, retryTime))
@@ -85,6 +93,12 @@ namespace Further.Abp.Operation
             var expiryTime = options.DefaultExpiry;
             var waitTime = options.DefaultWait;
             var retryTime = options.DefaultRetry;
+
+            if (!redis.IsConnected)
+            {
+                logger.LogWarning("Redis connection is down, skipping lock acquisition.");
+                return;
+            }
 
             this.Initialize(id);
 

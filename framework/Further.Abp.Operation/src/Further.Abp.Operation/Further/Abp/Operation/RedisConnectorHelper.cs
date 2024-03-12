@@ -35,7 +35,9 @@ namespace Further.Abp.Operation
 
         public void Initialize()
         {
-            var redis = ConnectionMultiplexer.Connect(configuration["Redis:Configuration"] + ",allowAdmin=true");
+            var options = ConfigurationOptions.Parse(configuration["Redis:Configuration"] + ",allowAdmin=true");
+
+            var redis = ConnectionMultiplexer.Connect(options);
             Connection = redis;
         }
 
@@ -71,6 +73,14 @@ namespace Further.Abp.Operation
                     }
                 }
             });
+        }
+
+        public void ReSubscribe()
+        {
+            Connection.ConnectionRestored += (sender, args) =>
+            {
+                Subscribe();
+            };
         }
 
         public ConnectionMultiplexer GetConntction()
