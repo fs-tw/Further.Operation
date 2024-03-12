@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -47,19 +48,21 @@ namespace Further.Abp.Operation
             Connection.GetServer(Connection.GetEndPoints().Single())
                 .ConfigSet("notify-keyspace-events", "KEA");
 
-            subscriber.Subscribe("__keyspace@0__:*", async (channel, value) =>
+            subscriber.Subscribe("__keyevent@0__:expired", async (channel, value) =>
             {
-                foreach (var method in options.Subscribes)
+                foreach (var method in options.ExpiredEventHandlers.GetHandlers())
                 {
+                    if (!value.ToString().Contains($"c:{method.CacheItem},k")) continue;
+
                     try
                     {
                         using (var scope = serviceScopeFactory.CreateScope())
                         {
-                            var subscribeMethod = scope.ServiceProvider.GetRequiredService(method) as IRedisSubscribe;
+                            var subscribeMethod = scope.ServiceProvider.GetRequiredService(method.ExpiredEventHandler) as IExpiredEventHandler;
 
                             if (subscribeMethod == null) continue;
 
-                            await subscribeMethod!.SubscribeAsync(channel.ToString(), value.ToString());
+                            await subscribeMethod!.HandlerAsync(value.ToString());
                         }
                     }
                     catch (Exception ex)

@@ -15,6 +15,6 @@ namespace Further.Abp.Operation
 
         public TimeSpan MaxSurvivalTime { get; set; } = TimeSpan.FromSeconds(5);
 
-        public List<Type> Subscribes { get; } = new();
+        public ExpiredEventHandlerConfigurations ExpiredEventHandlers { get; } = new();
     }
 }
