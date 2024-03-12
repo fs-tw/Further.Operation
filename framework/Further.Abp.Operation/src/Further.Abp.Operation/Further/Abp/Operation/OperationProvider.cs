@@ -1,4 +1,5 @@
-﻿using Further.Operation.Operations;
+﻿using FluentResults;
+using Further.Operation.Operations;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,51 +25,14 @@ namespace Further.Abp.Operation
         private readonly RedLockFactory redLockFactory;
         private readonly OperationOptions options;
         private readonly ILogger<OperationProvider> logger;
-        private readonly IDistributedCache<CacheOperationInfo, string> distributedCache;
+        private readonly IDistributedCache<OperationInfo, string> distributedCache;
         private readonly IGuidGenerator guidGenerator;
         private readonly AsyncLocal<Guid?> OperationId;
-
-        /// <summary>
-        /// 待後續調整jsonSerialization使用，進一步移除CacheOperationInfo這轉換物件
-        /// </summary>
-        public class CacheOperationInfo : OperationInfo
-        {
-            public new OperationResult Result { get; set; }
-
-            public new List<OperationOwnerInfo> Owners { get; set; } = new();
-
-            [JsonConstructor]
-            public CacheOperationInfo(Guid id) : base(id)
-            {
-            }
-
-            public CacheOperationInfo(OperationInfo operationInfo) : base(operationInfo.Id)
-            {
-                this.OperationId = operationInfo.OperationId;
-                this.OperationName = operationInfo.OperationName;
-                this.ExecutionDuration = operationInfo.ExecutionDuration;
-                this.Result = new OperationResult(operationInfo.Result);
-                this.Owners.AddRange(operationInfo.Owners);
-            }
-
-            public OperationInfo GetOperationInfo()
-            {
-                var operation = new OperationInfo(
-                    id: this.Id,
-                    operationId: this.OperationId,
-                    operationName: this.OperationName,
-                    result: this.Result.CopyToResult(),
-                    owners: this.Owners,
-                    executionDuration: this.ExecutionDuration);
-
-                return operation;
-            }
-        }
 
         public OperationProvider(
             ILogger<OperationProvider> logger,
             IOptions<OperationOptions> options,
-            IDistributedCache<CacheOperationInfo, string> distributedCache,
+            IDistributedCache<OperationInfo, string> distributedCache,
             RedisConnectorHelper redisConnector,
             IGuidGenerator guidGenerator)
         {
@@ -127,20 +91,20 @@ namespace Further.Abp.Operation
 
         public virtual Task<OperationInfo?> GetAsync(Guid id)
         {
-            return Task.FromResult(distributedCache.Get(id.GetCacheKey())?.GetOperationInfo());
+            return Task.FromResult(distributedCache.Get(id.GetCacheKey()));
         }
 
         public async Task<OperationInfo?> GetAsync(string id)
         {
-            var operationCacheInfo = await distributedCache.GetAsync(id);
+            var operationInfo = await distributedCache.GetAsync(id);
 
-            return operationCacheInfo?.GetOperationInfo();
+            return operationInfo;
         }
 
         protected virtual async Task<OperationInfo> GetOrCreate(Guid id)
         {
             var operationCacheInfo = await distributedCache.GetAsync(id.GetCacheKey());
-            OperationInfo? operationInfo = operationCacheInfo?.GetOperationInfo();
+            OperationInfo? operationInfo = operationCacheInfo;
 
             if (operationInfo == null)
             {
@@ -156,14 +120,14 @@ namespace Further.Abp.Operation
 
         protected virtual async Task SetAsync(OperationInfo operationInfo)
         {
-            await distributedCache.SetAsync(operationInfo.GetCacheKey(), new CacheOperationInfo(operationInfo), new DistributedCacheEntryOptions
+            await distributedCache.SetAsync(operationInfo.GetCacheKey(), operationInfo, new DistributedCacheEntryOptions
             {
                 SlidingExpiration = options.MaxSurvivalTime
             });
 
             var backupKey = operationInfo.GetCacheKey().GetOperationBackUpKey();
 
-            await distributedCache.SetAsync(backupKey, new CacheOperationInfo(operationInfo), new DistributedCacheEntryOptions
+            await distributedCache.SetAsync(backupKey, operationInfo, new DistributedCacheEntryOptions
             {
                 SlidingExpiration = options.MaxSurvivalTime + TimeSpan.FromSeconds(10)
             });

@@ -21,7 +21,7 @@ namespace Further.Operation.Operations
         {
             if (value.ToString() != "expired") return;
 
-            if (!channel.ToString().Contains("CacheOperationInfo")) return;
+            if (!channel.ToString().Contains("OperationInfo")) return;
 
             var startIndex = channel.ToString().IndexOf("Operation:");
 
