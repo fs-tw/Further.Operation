@@ -10,17 +10,20 @@ namespace Further.Operation.Operations
 {
     public class OperationAppService : ApplicationService, IOperationAppService
     {
+        private readonly OperationStore operationStore;
         private readonly IOperationRepository operationRepository;
 
         public OperationAppService(
+            OperationStore operationStore,
             IOperationRepository operationRepository)
         {
+            this.operationStore = operationStore;
             this.operationRepository = operationRepository;
         }
 
         public async Task<OperationDto> GetAsync(Guid id)
         {
-            var operation = await operationRepository.GetAsync(id);
+            var operation = await operationStore.GetAsync(id);
 
             return operation.ToDto(ObjectMapper);
         }
@@ -43,14 +46,13 @@ namespace Further.Operation.Operations
                 }
             };
 
-            var items = await operationRepository.GetListAsync(
-                specification: filter,
-                includeDetails: true,
+            var items = await operationStore.GetListAsync(
+                filter: filter,
                 maxResultCount: input.MaxResultCount,
                 skipCount: input.SkipCount,
                 sorting: input.Sorting);
 
-            var count = await operationRepository.GetCountAsync(specification: filter);
+            var count = await operationStore.GetCountAsync(filter: filter);
 
             return new PagedResultDto<OperationDto>(count, items.ToDtos(ObjectMapper));
         }

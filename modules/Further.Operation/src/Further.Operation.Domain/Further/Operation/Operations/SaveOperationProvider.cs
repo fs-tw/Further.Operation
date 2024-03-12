@@ -43,23 +43,7 @@ namespace Further.Operation.Operations
 
             await distributedCache.RemoveAsync(backKey);
 
-            var operation = await operationManager.CreateAsync(
-                id: operationInfo.Id,
-                operationId: operationInfo!.OperationId!,
-                operationName: operationInfo!.OperationName!,
-                result: operationInfo!.Result!,
-                isSuccess: operationInfo!.IsSuccess!,
-                executionDuration: operationInfo!.ExecutionDuration!,
-                tenantId: currentTenant.Id);
-
-            foreach (var owner in operationInfo!.Owners!)
-            {
-                operation = await operationManager.AddOperationOwnerAsync(
-                    operation: operation,
-                    entityType: owner.EntityType,
-                    entityId: owner.EntityId,
-                    metaData: owner.MetaData);
-            }
+            var operation = await operationManager.CreateAsync(operationInfo);
 
             using (var uow = unitOfWorkManager.Begin(requiresNew: true))
             {

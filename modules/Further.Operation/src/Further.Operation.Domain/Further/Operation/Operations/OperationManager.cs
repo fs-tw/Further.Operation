@@ -1,4 +1,5 @@
 ﻿using FluentResults;
+using Further.Abp.Operation;
 using Further.Operation.Options.TypeDefinitions;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Services;
 using Volo.Abp.Json;
+using Volo.Abp.MultiTenancy;
 
 namespace Further.Operation.Operations
 {
@@ -22,7 +24,7 @@ namespace Further.Operation.Operations
             this.operationOwnerTypeDefinitionStore = operationOwnerTypeDefinitionStore;
         }
 
-        public virtual Task<Operation> CreateAsync(Guid id,string operationId, string operationName, Result result, bool isSuccess, int executionDuration = 0, Guid? tenantId = null)
+        public virtual Task<Operation> CreateAsync(Guid id, string operationId, string operationName, Result result, bool isSuccess, int executionDuration = 0, Guid? tenantId = null)
         {
             var operation = new Operation(id);
 
@@ -57,6 +59,29 @@ namespace Further.Operation.Operations
             operation.RemoveOperationOwner(operationOwnerId);
 
             return Task.FromResult(operation);
+        }
+
+        public async virtual Task<Operation> CreateAsync(OperationInfo operationInfo)
+        {
+            var operation = await CreateAsync(
+                id: operationInfo.Id,
+                operationId: operationInfo!.OperationId!,
+                operationName: operationInfo!.OperationName!,
+                result: operationInfo!.Result!,
+                isSuccess: operationInfo!.IsSuccess!,
+                executionDuration: operationInfo!.ExecutionDuration!,
+                tenantId: CurrentTenant.Id);
+
+            foreach (var owner in operationInfo!.Owners!)
+            {
+                operation = await AddOperationOwnerAsync(
+                    operation: operation,
+                    entityType: owner.EntityType,
+                    entityId: owner.EntityId,
+                    metaData: owner.MetaData);
+            }
+
+            return operation;
         }
     }
 }

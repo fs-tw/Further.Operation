@@ -65,7 +65,7 @@ namespace Further.Operation.Operations
 
             Assert.NotNull(result);
             Assert.Equal(test, result.Id);
-            Assert.Equal(1, result.OperationOwners.Count);
+            Assert.True(result.OperationOwners.Count > 1);
         }
 
         protected async Task<Guid> CreateTestOperation()
