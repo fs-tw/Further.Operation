@@ -7,14 +7,17 @@ namespace Further.Abp.Operation
 {
     public interface IOperationProvider
     {
-        Guid? CurrentId { get; }
-        void Initialize(Guid? id = null);
+        Guid? GetCurrentId();
 
-        Task CreateOperationAsync(Guid id, Action<OperationInfo> action,TimeSpan? maxSurvivalTime = null);
+        void SetCurrentId(Guid id);
 
-        Task UpdateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? maxSurvivalTime = null);
+        Task InitializeAsync();
 
-        Task<List<Guid>> GetListOperationIdAsync();
+        Task CreateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? slidingExpiration = null);
+
+        Task UpdateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? slidingExpiration = null);
+
+        Task<List<Guid>> ListIdsAsync();
 
         Task<OperationInfo?> GetAsync(Guid id);
 

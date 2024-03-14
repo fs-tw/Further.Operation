@@ -124,8 +124,8 @@ namespace Further.Abp.Operation
         [Fact]
         public async Task UpdateOperationAsync_MultipleThreads_NotOverAdd_WithCurrentId()
         {
-            operationProvider.Initialize();
-            var operationId = operationProvider.CurrentId;
+            operationProvider.SetCurrentId(Guid.NewGuid());
+            var operationId = operationProvider.GetCurrentId();
             var maxNumberOfReasons = 10;
             var random = new Random();
 
@@ -169,9 +169,11 @@ namespace Further.Abp.Operation
         [Fact]
         public async Task CurrentIdTestAsync()
         {
-            operationProvider.Initialize();
             var manager1 = GetRequiredService<TestOperationManager>();
             var manager2 = GetRequiredService<TestOperationManager2>();
+
+            operationProvider.SetCurrentId(Guid.NewGuid());
+
             var id1 = await manager1.GetCurrentId();
             var id2 = await manager2.GetCurrentId();
 
@@ -183,12 +185,14 @@ namespace Further.Abp.Operation
         {
             var manager1 = GetRequiredService<TestOperationManager>();
             var manager3 = GetRequiredService<TestOperationManager3>();
-            operationProvider.Initialize();
+
+            operationProvider.SetCurrentId(Guid.NewGuid());
+
             var id1 = await manager1.GetCurrentId();
             var id2 = await manager3.GetCurrentId();
 
-            Assert.Equal(operationProvider.CurrentId, id1);
-            Assert.NotEqual(operationProvider.CurrentId, id2);
+            Assert.Equal(operationProvider.GetCurrentId(), id1);
+            Assert.NotEqual(operationProvider.GetCurrentId(), id2);
         }
 
         [Fact]
@@ -196,11 +200,13 @@ namespace Further.Abp.Operation
         {
             var manager2 = GetRequiredService<TestOperationManager2>();
             var manager4 = GetRequiredService<TestOperationManager4>();
-            operationProvider.Initialize();
+
+            operationProvider.SetCurrentId(Guid.NewGuid());
+
             var id1 = await manager2.GetCurrentId();
             var id2 = await manager4.CheckCurrentId();
 
-            Assert.Equal(operationProvider.CurrentId, id1);
+            Assert.Equal(operationProvider.GetCurrentId(), id1);
             Assert.True(id2);
         }
 
@@ -214,7 +220,7 @@ namespace Further.Abp.Operation
                 operationInfo.OperationId = operationId.ToString();
             });
 
-            var ids = await operationProvider.GetListOperationIdAsync();
+            var ids = await operationProvider.ListIdsAsync();
 
             Assert.NotNull(ids);
             Assert.Contains(operationId, ids);

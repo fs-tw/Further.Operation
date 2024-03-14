@@ -1,5 +1,6 @@
 ﻿using FluentResults;
 using Further.Abp.Operation;
+using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,11 +19,14 @@ namespace Further.Operation.Operations
         protected IJsonSerializer jsonSerializer { get; }
         protected IOperationProvider operationProvider { get; }
 
+        protected IDistributedCache distributedCache { get; }
+
         protected OperationSaveTest()
         {
             operationRepository = GetRequiredService<IOperationRepository>();
             jsonSerializer = GetRequiredService<IJsonSerializer>();
             operationProvider = GetRequiredService<IOperationProvider>();
+            distributedCache = GetRequiredService<IDistributedCache>();
         }
 
         [Fact]
@@ -71,10 +75,17 @@ namespace Further.Operation.Operations
                 });
             });
 
-            var ids = await operationProvider.GetListOperationIdAsync();
+            var ids = await operationProvider.ListIdsAsync();
 
             Assert.NotNull(ids);
             Assert.Contains(operationId, ids);
         }
+
+        [Fact]
+        public async Task TestCacheAsync()
+        {
+            await distributedCache.SetStringAsync("test", "test");
+        }
+
     }
 }

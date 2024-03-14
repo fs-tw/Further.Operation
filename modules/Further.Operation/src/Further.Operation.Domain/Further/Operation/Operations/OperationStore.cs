@@ -73,7 +73,7 @@ namespace Further.Operation.Operations
 
         protected virtual async Task<List<Operation>> GetRedisOperationAsync(OperationFilterBase<Operation>? filter = null)
         {
-            var operationIds = await operationProvider.GetListOperationIdAsync();
+            var operationIds = await operationProvider.ListIdsAsync();
 
             var operations = new List<Operation>();
 

@@ -65,7 +65,17 @@ namespace Further.Operation.Operations
 
             Assert.NotNull(result);
             Assert.Equal(test, result.Id);
-            Assert.True(result.OperationOwners.Count > 1);
+            Assert.Equal(result.OperationOwners.Count, 1);
+        }
+
+        [Fact]
+        public async Task GetListOwnerTypeAsync()
+        {
+            var types = await operationAppService.GetListOwnerTypeAsync();
+
+            Assert.NotNull(types);
+            Assert.NotEmpty(types);
+            Assert.Contains("TestOperationType", types);
         }
 
         protected async Task<Guid> CreateTestOperation()

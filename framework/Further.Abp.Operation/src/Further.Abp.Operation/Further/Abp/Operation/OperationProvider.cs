@@ -1,6 +1,6 @@
 ﻿using FluentResults;
-using Further.Operation.Operations;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RedLockNet.SERedis;
@@ -8,6 +8,7 @@ using RedLockNet.SERedis.Configuration;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -15,71 +16,99 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Caching;
 using Volo.Abp.DependencyInjection;
+using Volo.Abp.EventBus.Distributed;
 using Volo.Abp.Guids;
 
 namespace Further.Abp.Operation
 {
     public class OperationProvider : IOperationProvider, ISingletonDependency
     {
-        public Guid? CurrentId => OperationId.Value;
 
-        private readonly RedLockFactory redLockFactory;
+        private readonly TimeSpan DefaultExpiry = TimeSpan.FromSeconds(5);
+
+        private readonly TimeSpan DefaultWait = TimeSpan.FromSeconds(2);
+
+        private readonly TimeSpan DefaultRetry = TimeSpan.FromMilliseconds(200);
+
         private readonly OperationOptions options;
         private readonly ILogger<OperationProvider> logger;
         private readonly AbpDistributedCacheOptions distributedCacheOptions;
-        private readonly IDistributedCache<OperationInfo, string> distributedCache;
+        private readonly IDistributedCache<OperationInfo> distributedCache;
         private readonly IGuidGenerator guidGenerator;
+        private readonly IConfiguration configuration;
+        private readonly IDistributedEventBus distributedEventBus;
         private readonly AsyncLocal<Guid?> OperationId;
-        private readonly IDatabase db;
-        private ConnectionMultiplexer redis;
+
+        private RedLockFactory? redLockFactory;
+        private IDatabase? db;
+        private ConnectionMultiplexer? connection;
 
         public OperationProvider(
             ILogger<OperationProvider> logger,
             IOptions<OperationOptions> options,
             IOptions<AbpDistributedCacheOptions> distributedCacheOptions,
-            IDistributedCache<OperationInfo, string> distributedCache,
-            RedisConnectorHelper redisConnector,
-            IGuidGenerator guidGenerator)
+            IDistributedCache<OperationInfo> distributedCache,
+            IGuidGenerator guidGenerator,
+            IConfiguration configuration,
+            IDistributedEventBus distributedEventBus)
         {
-            var redis = redisConnector.GetConntction();
-            this.redis = redis;
-            this.db = redis.GetDatabase();
-            this.redLockFactory = RedLockFactory.Create(new List<RedLockMultiplexer> { redis });
             this.options = options.Value;
             this.logger = logger;
             this.distributedCacheOptions = distributedCacheOptions.Value;
             this.distributedCache = distributedCache;
             this.guidGenerator = guidGenerator;
+            this.configuration = configuration;
+            this.distributedEventBus = distributedEventBus;
             OperationId = new AsyncLocal<Guid?>();
         }
 
-        public virtual void Initialize(Guid? id = null)
+        public virtual Guid? GetCurrentId()
         {
-            OperationId.Value = id ?? guidGenerator.Create();
+            return OperationId.Value;
         }
 
-        public virtual async Task UpdateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? maxSurvivalTime = null)
+        public virtual void SetCurrentId(Guid id)
         {
-            var expiryTime = options.DefaultExpiry;
-            var waitTime = options.DefaultWait;
-            var retryTime = options.DefaultRetry;
+            OperationId.Value = id;
+        }
 
-            if (!redis.IsConnected)
+        public virtual async Task InitializeAsync()
+        {
+            var options = ConfigurationOptions.Parse(configuration["Redis:Configuration"] + ",allowAdmin=true");
+
+            var redis = await ConnectionMultiplexer.ConnectAsync(options);
+
+            connection = redis;
+            db = redis.GetDatabase();
+            redLockFactory = RedLockFactory.Create(new List<RedLockMultiplexer> { redis });
+
+            await SubscribeKeyExpiredAsync();
+
+            ReSubscribe();
+        }
+
+        public virtual async Task UpdateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? slidingExpiration = null)
+        {
+            var expiryTime = DefaultExpiry;
+            var waitTime = DefaultWait;
+            var retryTime = DefaultRetry;
+
+            if (!connection!.IsConnected)
             {
                 logger.LogWarning("Redis connection is down, skipping lock acquisition.");
                 return;
             }
 
 
-            using (var redLock = await redLockFactory.CreateLockAsync(id.ToString(), expiryTime, waitTime, retryTime))
+            using (var redLock = await redLockFactory!.CreateLockAsync(id.ToString(), expiryTime, waitTime, retryTime))
             {
                 if (redLock.IsAcquired)
                 {
-                    var operationInfo = await Get(id);
+                    var operationInfo = await GetAsync(id);
 
                     action(operationInfo);
 
-                    await SetAsync(operationInfo, maxSurvivalTime);
+                    await SetAsync(operationInfo, slidingExpiration);
                 }
                 else
                 {
@@ -88,21 +117,21 @@ namespace Further.Abp.Operation
             }
         }
 
-        public virtual async Task CreateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? maxSurvivalTime = null)
+        public virtual async Task CreateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? slidingExpiration = null)
         {
-            var expiryTime = options.DefaultExpiry;
-            var waitTime = options.DefaultWait;
-            var retryTime = options.DefaultRetry;
+            var expiryTime = DefaultExpiry;
+            var waitTime = DefaultWait;
+            var retryTime = DefaultRetry;
 
-            if (!redis.IsConnected)
+            if (!connection!.IsConnected)
             {
                 logger.LogWarning("Redis connection is down, skipping lock acquisition.");
                 return;
             }
 
-            this.Initialize(id);
+            OperationId.Value = id;
 
-            using (var redLock = await redLockFactory.CreateLockAsync(id.ToString(), expiryTime, waitTime, retryTime))
+            using (var redLock = await redLockFactory!.CreateLockAsync(id.ToString(), expiryTime, waitTime, retryTime))
             {
                 if (redLock.IsAcquired)
                 {
@@ -110,7 +139,7 @@ namespace Further.Abp.Operation
 
                     action(operationInfo);
 
-                    await SetAsync(operationInfo, maxSurvivalTime ?? options.MaxSurvivalTime);
+                    await SetAsync(operationInfo, slidingExpiration ?? options.DefaultSlidingExpiration);
                 }
                 else
                 {
@@ -119,14 +148,14 @@ namespace Further.Abp.Operation
             }
         }
 
-        public virtual Task<List<Guid>> GetListOperationIdAsync()
+        public virtual Task<List<Guid>> ListIdsAsync()
         {
             string pattern = $"*k:{distributedCacheOptions.KeyPrefix}*"; // 定義符合特定規則的模式
-            var keys = db.Execute("KEYS", pattern); // 使用 KEYS 指令取得符合模式的 key
+            var keys = db!.Execute("KEYS", pattern); // 使用 KEYS 指令取得符合模式的 key
             var result = new List<Guid>();
 
             // 返回符合規則的 key
-            foreach (string key in (string[])keys)
+            foreach (string key in (string[])keys!)
             {
                 var operationId = RedisKeyParseOperationId(key);
 
@@ -141,52 +170,73 @@ namespace Further.Abp.Operation
 
         public virtual async Task RemoveAsync(Guid id)
         {
-            await distributedCache.RemoveAsync(id.GetCacheKey());
+            await distributedCache.RemoveAsync(OperationConsts.GetIdKey(id));
+            await distributedCache.RemoveAsync(OperationConsts.GetValueKey(id));
         }
 
-        public virtual Task<OperationInfo?> GetAsync(Guid id)
+        public virtual async Task<OperationInfo?> GetAsync(Guid id)
         {
-            return Task.FromResult(distributedCache.Get(id.GetCacheKey()));
+            await distributedCache.GetAsync(OperationConsts.GetIdKey(id));
+            return await distributedCache.GetAsync(OperationConsts.GetValueKey(id));
         }
 
-        protected virtual async Task<OperationInfo> Get(Guid id)
+        protected virtual async Task SetAsync(OperationInfo operationInfo, TimeSpan? slidingExpiration = null)
         {
-            var operationInfo = await distributedCache.GetAsync(id.GetCacheKey());
-
-            if (operationInfo == null)
+            if (slidingExpiration != null)
             {
-                throw new UserFriendlyException($"Operation {id} not found.");
-            }
-
-            var backupKey = id.GetCacheKey().GetOperationBackUpKey();
-
-            await distributedCache.GetAsync(backupKey);
-
-            return operationInfo;
-        }
-
-        protected virtual async Task SetAsync(OperationInfo operationInfo, TimeSpan? maxSurvivalTime = null)
-        {
-            if (maxSurvivalTime != null)
-            {
-                await distributedCache.SetAsync(operationInfo.GetCacheKey(), operationInfo, new DistributedCacheEntryOptions
+                await distributedCache.SetAsync(OperationConsts.GetIdKey(operationInfo.Id), operationInfo, new DistributedCacheEntryOptions
                 {
-                    SlidingExpiration = maxSurvivalTime
+                    SlidingExpiration = slidingExpiration
                 });
 
-                var backupKey = operationInfo.GetCacheKey().GetOperationBackUpKey();
-
-                await distributedCache.SetAsync(backupKey, operationInfo, new DistributedCacheEntryOptions
+                await distributedCache.SetAsync(OperationConsts.GetValueKey(operationInfo.Id), operationInfo, new DistributedCacheEntryOptions
                 {
-                    SlidingExpiration = maxSurvivalTime + TimeSpan.FromSeconds(10)
+                    SlidingExpiration = slidingExpiration + TimeSpan.FromSeconds(10)
                 });
             }
 
-            if (maxSurvivalTime == null)
+            if (slidingExpiration == null)
             {
-                await distributedCache.SetAsync(operationInfo.GetCacheKey(), operationInfo);
-                await distributedCache.SetAsync(operationInfo.GetCacheKey().GetOperationBackUpKey(), operationInfo);
+                await distributedCache.SetAsync(OperationConsts.GetIdKey(operationInfo.Id), operationInfo);
+                await distributedCache.SetAsync(OperationConsts.GetValueKey(operationInfo.Id), operationInfo);
             }
+        }
+
+        public async Task SubscribeKeyExpiredAsync()
+        {
+            var subscriber = connection!.GetSubscriber();
+
+            connection.GetServer(connection.GetEndPoints().Single())
+                .ConfigSet("notify-keyspace-events", "KEA");
+
+            await subscriber.SubscribeAsync("__keyevent@0__:expired", async (channel, value) =>
+            {
+                if (!value.ToString().Contains($"c:{typeof(OperationInfo).FullName},k")) return;
+
+                var operationId = RedisKeyParseOperationId(value.ToString());
+
+                if (operationId.HasValue)
+                {
+                    var operationInfo = await distributedCache.GetAsync(OperationConsts.GetValueKey(operationId.Value));
+
+                    if (operationInfo == null) return;
+
+                    await distributedCache.RemoveAsync(OperationConsts.GetValueKey(operationId.Value));
+
+                    await distributedEventBus.PublishAsync(new OperationExpiredEvent
+                    {
+                        OperationInfo = operationInfo
+                    });
+                }
+            });
+        }
+
+        public void ReSubscribe()
+        {
+            connection!.ConnectionRestored += async (sender, args) =>
+            {
+                await SubscribeKeyExpiredAsync();
+            };
         }
 
         protected virtual Guid? RedisKeyParseOperationId(string key)
@@ -199,7 +249,7 @@ namespace Further.Abp.Operation
 
             key = key.Replace($"c{typeof(OperationInfo)}:,k:{distributedCacheOptions.KeyPrefix}", "");
 
-            string prefix = "Operation:";
+            string prefix = "Ids:";
             int prefixIndex = key.IndexOf(prefix);
 
             if (prefixIndex != -1)
@@ -210,11 +260,6 @@ namespace Further.Abp.Operation
                 {
                     // 如果沒有找到冒號，說明 id 部分就是最後一部分
                     return Guid.Parse(key.Substring(idStartIndex));
-                }
-                else
-                {
-                    // 如果找到了冒號，表示 id 部分結束於冒號之前
-                    return Guid.Parse(key.Substring(idStartIndex, idEndIndex - idStartIndex));
                 }
             }
 

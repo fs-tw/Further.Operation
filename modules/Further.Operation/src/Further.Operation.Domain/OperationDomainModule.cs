@@ -16,9 +16,5 @@ public class OperationDomainModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        Configure<OperationOptions>(options =>
-        {
-            options.ExpiredEventHandlers.Configure<OperationInfo, OperationSaveHandler>();
-        });
     }
 }

@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Caching.StackExchangeRedis;
 using Volo.Abp.Json;
 using Volo.Abp.Json.Newtonsoft;
 using Volo.Abp.Modularity;
+using Volo.Abp.Threading;
 
 namespace Further.Abp.Operation;
 
@@ -32,11 +34,14 @@ public class AbpOperationModule : AbpModule
         });
     }
 
+    public override async Task OnApplicationInitializationAsync(ApplicationInitializationContext context)
+    {
+        var operationProvider = context.ServiceProvider.GetRequiredService<OperationProvider>();
+        await operationProvider.InitializeAsync();
+    }
+
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
-        var redisService = context.ServiceProvider.GetRequiredService<RedisConnectorHelper>();
-        redisService.Initialize();
-        redisService.Subscribe();
-        redisService.ReSubscribe();
+        AsyncHelper.RunSync(() => OnApplicationInitializationAsync(context));
     }
 }

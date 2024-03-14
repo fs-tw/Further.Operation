@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Further.Operation.Options;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,15 +12,23 @@ namespace Further.Operation.Operations
 {
     public class OperationAppService : ApplicationService, IOperationAppService
     {
+        private readonly FurtherOperationOptions options;
         private readonly OperationStore operationStore;
         private readonly IOperationRepository operationRepository;
 
         public OperationAppService(
+            IOptions<FurtherOperationOptions> options,
             OperationStore operationStore,
             IOperationRepository operationRepository)
         {
+            this.options = options.Value;
             this.operationStore = operationStore;
             this.operationRepository = operationRepository;
+        }
+
+        public Task<List<string>> GetListOwnerTypeAsync()
+        {
+            return Task.FromResult(options.EntityTypes.Select(x => x.EntityType).ToList());
         }
 
         public async Task<OperationDto> GetAsync(Guid id)
