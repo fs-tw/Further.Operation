@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Further.Abp.Operation
 {
-    public class OperationExpiredEvent
+    public class OperationExpiredEto
     {
         public OperationInfo OperationInfo { get; set; } = null!;
     }

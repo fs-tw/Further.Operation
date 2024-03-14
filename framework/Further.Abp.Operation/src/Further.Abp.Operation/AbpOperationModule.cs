@@ -1,9 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Caching.StackExchangeRedis;
-using Volo.Abp.Json;
 using Volo.Abp.Json.Newtonsoft;
 using Volo.Abp.Modularity;
 using Volo.Abp.Threading;
@@ -17,11 +15,6 @@ namespace Further.Abp.Operation;
     typeof(Further.Abp.Operation.AbpOperationAbstractionsModule))]
 public class AbpOperationModule : AbpModule
 {
-    //public override void PreConfigureServices(ServiceConfigurationContext context)
-    //{
-    //    context.Services.OnRegistered(OperationInterceptorRegistrar.RegisterIfNeeded);
-    //}
-
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         var configuration = context.Services.GetConfiguration();
@@ -36,8 +29,7 @@ public class AbpOperationModule : AbpModule
 
     public override async Task OnApplicationInitializationAsync(ApplicationInitializationContext context)
     {
-        var operationProvider = context.ServiceProvider.GetRequiredService<OperationProvider>();
-        await operationProvider.InitializeAsync();
+        await context.ServiceProvider.GetRequiredService<OperationProvider>().InitializeAsync();
     }
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)

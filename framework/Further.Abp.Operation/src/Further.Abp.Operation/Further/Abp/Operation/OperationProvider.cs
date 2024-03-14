@@ -1,5 +1,4 @@
-﻿using FluentResults;
-using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,11 +8,8 @@ using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Volo.Abp;
 using Volo.Abp.Caching;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.EventBus.Distributed;
@@ -34,7 +30,6 @@ namespace Further.Abp.Operation
         private readonly ILogger<OperationProvider> logger;
         private readonly AbpDistributedCacheOptions distributedCacheOptions;
         private readonly IDistributedCache<OperationInfo> distributedCache;
-        private readonly IGuidGenerator guidGenerator;
         private readonly IConfiguration configuration;
         private readonly IDistributedEventBus distributedEventBus;
         private readonly AsyncLocal<Guid?> OperationId;
@@ -48,7 +43,6 @@ namespace Further.Abp.Operation
             IOptions<OperationOptions> options,
             IOptions<AbpDistributedCacheOptions> distributedCacheOptions,
             IDistributedCache<OperationInfo> distributedCache,
-            IGuidGenerator guidGenerator,
             IConfiguration configuration,
             IDistributedEventBus distributedEventBus)
         {
@@ -56,7 +50,6 @@ namespace Further.Abp.Operation
             this.logger = logger;
             this.distributedCacheOptions = distributedCacheOptions.Value;
             this.distributedCache = distributedCache;
-            this.guidGenerator = guidGenerator;
             this.configuration = configuration;
             this.distributedEventBus = distributedEventBus;
             OperationId = new AsyncLocal<Guid?>();
@@ -84,7 +77,10 @@ namespace Further.Abp.Operation
 
             await SubscribeKeyExpiredAsync();
 
-            ReSubscribe();
+            connection!.ConnectionRestored += async (sender, args) =>
+            {
+                await SubscribeKeyExpiredAsync();
+            };
         }
 
         public virtual async Task UpdateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? slidingExpiration = null)
@@ -223,19 +219,16 @@ namespace Further.Abp.Operation
 
                     await distributedCache.RemoveAsync(OperationConsts.GetValueKey(operationId.Value));
 
-                    await distributedEventBus.PublishAsync(new OperationExpiredEvent
+                    await distributedEventBus.PublishAsync(new OperationExpiredEto
                     {
                         OperationInfo = operationInfo
                     });
                 }
             });
-        }
 
-        public void ReSubscribe()
-        {
-            connection!.ConnectionRestored += async (sender, args) =>
+            connection.ConnectionFailed += async (sender, args) =>
             {
-                await SubscribeKeyExpiredAsync();
+                await subscriber.UnsubscribeAsync("__keyevent@0__:expired");
             };
         }
 

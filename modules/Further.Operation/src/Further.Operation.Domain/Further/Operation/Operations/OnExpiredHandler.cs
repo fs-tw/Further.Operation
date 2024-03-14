@@ -9,7 +9,7 @@ using Volo.Abp.Uow;
 
 namespace Further.Operation.Operations
 {
-    public class OnExpiredHandler : IDistributedEventHandler<OperationExpiredEvent>, ITransientDependency
+    public class OnExpiredHandler : IDistributedEventHandler<OperationExpiredEto>, ITransientDependency
     {
         private readonly IOperationRepository operationRepository;
         private readonly OperationManager operationManager;
@@ -25,7 +25,7 @@ namespace Further.Operation.Operations
             this.unitOfWorkManager = unitOfWorkManager;
         }
 
-        public async Task HandleEventAsync(OperationExpiredEvent eventData)
+        public async Task HandleEventAsync(OperationExpiredEto eventData)
         {
             var operation = await operationManager.CreateAsync(eventData.OperationInfo);
 
