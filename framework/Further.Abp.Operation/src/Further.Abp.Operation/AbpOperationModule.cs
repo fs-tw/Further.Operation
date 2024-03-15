@@ -2,14 +2,13 @@
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Caching.StackExchangeRedis;
-using Volo.Abp.Json.Newtonsoft;
+using Volo.Abp.Json.SystemTextJson;
 using Volo.Abp.Modularity;
 using Volo.Abp.Threading;
 
 namespace Further.Abp.Operation;
 
 [DependsOn(
-    typeof(AbpJsonNewtonsoftModule),
     typeof(AbpCachingStackExchangeRedisModule))]
 [DependsOn(
     typeof(Further.Abp.Operation.AbpOperationAbstractionsModule))]
@@ -20,11 +19,22 @@ public class AbpOperationModule : AbpModule
         var configuration = context.Services.GetConfiguration();
         Configure<OperationOptions>(configuration.GetSection("Operation"));
 
-        Configure<AbpNewtonsoftJsonSerializerOptions>(options =>
+        Configure<AbpSystemTextJsonSerializerOptions>(x =>
         {
-            options.JsonSerializerSettings.Converters.Add(new FluentResultConverter());
-            options.JsonSerializerSettings.Converters.Add(new OperationInfoConverter());
+            x.JsonSerializerOptions.Converters.Add(new ResultConverter());
+            //x.JsonSerializerOptions
         });
+
+        //Configure<AbpSystemTextJsonSerializerModifiersOptions>(x => 
+        //{
+        //    x.Modifiers.Add(y=>y.)
+        //});
+
+        //Configure<AbpNewtonsoftJsonSerializerOptions>(options =>
+        //{
+        //    //options.JsonSerializerSettings.Converters.Add(new FluentResultConverter());
+        //    //options.JsonSerializerSettings.Converters.Add(new OperationInfoConverter());
+        //});
     }
 
     public override async Task OnApplicationInitializationAsync(ApplicationInitializationContext context)

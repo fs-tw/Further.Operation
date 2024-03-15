@@ -9,11 +9,11 @@ using Xunit;
 
 namespace Further.Abp.Operation
 {
-    public class OperationProviderTest : OperationTestBase
+    public class OperationProvider_Test : OperationTestBase
     {
         private readonly IOperationProvider operationProvider;
 
-        public OperationProviderTest()
+        public OperationProvider_Test()
         {
             operationProvider = GetRequiredService<IOperationProvider>();
         }
@@ -27,7 +27,7 @@ namespace Further.Abp.Operation
             // 定義修改操作
             Action<OperationInfo> action = (op) =>
             {
-                op.Result.WithSuccess(new Success(message));
+                op.GetResult().WithSuccess(new Success(message));
             };
 
             // 執行修改操作
@@ -52,7 +52,7 @@ namespace Further.Abp.Operation
             // 定義修改操作
             Action<OperationInfo> action = (op) =>
             {
-                op.Result.WithSuccess(new Success("Test"));
+                op.GetResult().WithSuccess(new Success("Test"));
             };
 
             int numberOfTasks = 10; // 並行任務的數量
@@ -96,7 +96,7 @@ namespace Further.Abp.Operation
                 {
                     return;
                 }
-                op.Result.WithSuccess(new Success("Test"));
+                op.GetResult().WithSuccess(new Success("Test"));
             };
 
             int numberOfTasks = 50; // 並行任務的數量
@@ -141,7 +141,7 @@ namespace Further.Abp.Operation
                 {
                     return;
                 }
-                op.Result.WithSuccess(new Success("Test"));
+                op.GetResult().WithSuccess(new Success("Test"));
             };
 
             int numberOfTasks = 50; // 並行任務的數量
