@@ -5,11 +5,29 @@
         "path":"index.md"
       },
       {
-        "text": "操作紀錄",
+        "text": "UI和UX規劃",
         "items": [
           {
-            "text": "Further.Operation UI規劃",
-            "path": "Further.Operation/index.md"
+            "text": "Operation UI規劃",
+            "path": "UI和UX規劃/index.md"
+          }
+        ]
+      },
+      {
+        "text": "實體規劃",
+        "items": [
+          {
+            "text": "Operation 實體規劃",
+            "path": "實體規劃/index.md"
+          }
+        ]
+      },
+      {
+        "text": "Api文檔",
+        "items": [
+          {
+            "text": "Operation Api文檔",
+            "path": "Api文檔/index.md"
           }
         ]
       }
