@@ -45,37 +45,6 @@ namespace Further.Operation.Operations
                 Metadata = r.Metadata
             }).ToList();
         }
-
-        public Result CopyToResult()
-        {
-            var result = new Result();
-
-            //foreach (var reason in Reasons)
-            //{
-            //    result.WithReason(reason);
-            //}
-
-            foreach (var error in Errors)
-            {
-                var reason = new Error(error.Message);
-
-                reason = (Error)(error.CopyMetadataReason(reason));
-
-                result.WithError(reason);
-            }
-
-            foreach (var success in Successes)
-            {
-                var reason = new Success(success.Message);
-
-                reason = (Success)(success.CopyMetadataReason(reason));
-
-                result.WithSuccess(reason);
-
-            }
-
-            return result;
-        }
     }
 
     public class OperationReason: IReason

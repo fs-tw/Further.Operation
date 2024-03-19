@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Further.Operation.Options;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,17 +12,28 @@ namespace Further.Operation.Operations
 {
     public class OperationAppService : ApplicationService, IOperationAppService
     {
+        private readonly FurtherOperationOptions options;
+        private readonly OperationStore operationStore;
         private readonly IOperationRepository operationRepository;
 
         public OperationAppService(
+            IOptions<FurtherOperationOptions> options,
+            OperationStore operationStore,
             IOperationRepository operationRepository)
         {
+            this.options = options.Value;
+            this.operationStore = operationStore;
             this.operationRepository = operationRepository;
+        }
+
+        public Task<List<string>> GetListOwnerTypeAsync()
+        {
+            return Task.FromResult(options.EntityTypes.Select(x => x.EntityType).ToList());
         }
 
         public async Task<OperationDto> GetAsync(Guid id)
         {
-            var operation = await operationRepository.GetAsync(id);
+            var operation = await operationStore.GetAsync(id);
 
             return operation.ToDto(ObjectMapper);
         }
@@ -43,14 +56,13 @@ namespace Further.Operation.Operations
                 }
             };
 
-            var items = await operationRepository.GetListAsync(
-                specification: filter,
-                includeDetails: true,
+            var items = await operationStore.GetListAsync(
+                filter: filter,
                 maxResultCount: input.MaxResultCount,
                 skipCount: input.SkipCount,
                 sorting: input.Sorting);
 
-            var count = await operationRepository.GetCountAsync(specification: filter);
+            var count = await operationStore.GetCountAsync(filter: filter);
 
             return new PagedResultDto<OperationDto>(count, items.ToDtos(ObjectMapper));
         }

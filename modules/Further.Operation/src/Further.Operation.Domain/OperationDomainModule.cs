@@ -16,9 +16,5 @@ public class OperationDomainModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        Configure<OperationOptions>(config =>
-        {
-            config.Subscribes.Add(typeof(OperationSubscribe));
-        });
     }
 }
