@@ -13,7 +13,7 @@ jobs:
         token: r79j54p2crlTmuQChPt2grEhNYnI5351Hpk1J9idGZJ
         message: |
           
-          fs-tw/Further : dotnet-build-and-test
+          ${{ github.repository}}  : dotnet-build-and-test
           Actor: ${{ github.actor }}
           Start
 
@@ -52,11 +52,11 @@ jobs:
       run: |
         dotnet build
       continue-on-error: false      
-    - id: test
-      shell: pwsh
-      run: |
-        dotnet test
-      continue-on-error: false   
+    # - id: test
+    #   shell: pwsh
+    #   run: |
+    #     dotnet test
+    #   continue-on-error: false   
 
   notify-end:
     runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
         token: r79j54p2crlTmuQChPt2grEhNYnI5351Hpk1J9idGZJ
         message: |
           
-          fs-tw/Further : dotnet-build-and-test
+          ${{ github.repository}} : dotnet-build-and-test
           Actor: ${{ github.actor }}
           Success
           

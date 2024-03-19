@@ -1,0 +1,7 @@
+[submodule "tools/entitydeveloper"]
+	path = tools/entitydeveloper
+	url = https://github.com/fs-tw/entitydeveloper.git
+[submodule "modules/Further.Payment"]
+	path = modules/Further.Payment
+	url = https://github.com/fs-tw/Further.Payment
+	branch = develop

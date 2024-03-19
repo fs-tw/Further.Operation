@@ -1,5 +1,6 @@
 ﻿using FluentResults;
 using Further.Abp.Operation;
+using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,11 +19,14 @@ namespace Further.Operation.Operations
         protected IJsonSerializer jsonSerializer { get; }
         protected IOperationProvider operationProvider { get; }
 
+        protected IDistributedCache distributedCache { get; }
+
         protected OperationSaveTest()
         {
             operationRepository = GetRequiredService<IOperationRepository>();
             jsonSerializer = GetRequiredService<IJsonSerializer>();
             operationProvider = GetRequiredService<IOperationProvider>();
+            distributedCache = GetRequiredService<IDistributedCache>();
         }
 
         [Fact]
@@ -30,7 +34,7 @@ namespace Further.Operation.Operations
         {
             var operationId = Guid.NewGuid();
 
-            await operationProvider.ModifyOperationAsync(operationId, operationInfo =>
+            await operationProvider.CreateOperationAsync(operationId, operationInfo =>
             {
                 operationInfo.OperationId = operationId.ToString();
                 operationInfo.OperationName = "TestOperation";
@@ -53,5 +57,29 @@ namespace Further.Operation.Operations
                 result.Successes.First().Message,
                 "OperationStore保存成功");
         }
+
+        [Fact]
+        public async Task OperationGetListAsync()
+        {
+            var operationId = Guid.NewGuid();
+
+            await operationProvider.CreateOperationAsync(operationId, operationInfo =>
+            {
+                operationInfo.OperationId = operationId.ToString();
+                operationInfo.OperationName = "TestOperation";
+                operationInfo.Result.WithSuccess(new Success("OperationStore保存成功"));
+                operationInfo.Owners.Add(new OperationOwnerInfo
+                {
+                    EntityType = "TestOperationType",
+                    EntityId = Guid.NewGuid()
+                });
+            });
+
+            var ids = await operationProvider.ListIdsAsync();
+
+            Assert.NotNull(ids);
+            Assert.Contains(operationId, ids);
+        }
+
     }
 }
