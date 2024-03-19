@@ -42,12 +42,16 @@ namespace Further.Operation.Operations
         public async Task<List<Operation>> GetListAsync(OperationFilterBase<Operation>? filter = null, int maxResultCount = int.MaxValue, int skipCount = 0, string? sorting = null)
         {
             var operations = await GetRedisOperationAsync(filter);
+            var redisCount = operations.Count;
+
+            var adjustedSkipCount = Math.Max(0, skipCount - redisCount);
+            var adjustedMaxResultCount = Math.Max(1, maxResultCount - redisCount);
 
             var operationDatas = await operationRepository.GetListAsync(
                 specification: filter,
                 includeDetails: true,
-                maxResultCount: maxResultCount,
-                skipCount: skipCount,
+                maxResultCount: adjustedMaxResultCount,
+                skipCount: adjustedSkipCount,
                 sorting: sorting);
 
             operations.AddRange(operationDatas);
@@ -56,7 +60,7 @@ namespace Further.Operation.Operations
 
             operationQuery = ApplySorting(operationQuery, sorting);
 
-            return operationQuery.PageBy(skipCount, maxResultCount).ToList();
+            return operationQuery.ToList();
         }
 
         public async Task<long> GetCountAsync(OperationFilterBase<Operation>? filter = null)

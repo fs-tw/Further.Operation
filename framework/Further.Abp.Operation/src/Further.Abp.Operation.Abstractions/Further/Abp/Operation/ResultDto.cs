@@ -17,7 +17,7 @@ namespace Further.Abp.Operation
             public string? Message { get; set; }
 
             public Dictionary<string, object>? Metadata { get; set; }
-            public List<Error>? Reasons { get; }
+            public List<Error>? Reasons { get; set; }
         }
         public bool IsFailed { get; set; }
         public bool IsSuccess { get; set; }
