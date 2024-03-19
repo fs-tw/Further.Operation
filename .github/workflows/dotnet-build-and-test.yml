@@ -13,7 +13,7 @@ jobs:
         token: r79j54p2crlTmuQChPt2grEhNYnI5351Hpk1J9idGZJ
         message: |
           
-          ${{GITHUB_REPOSITORY}}  : dotnet-build-and-test
+          ${{ github.repository}}  : dotnet-build-and-test
           Actor: ${{ github.actor }}
           Start
 
@@ -68,7 +68,7 @@ jobs:
         token: r79j54p2crlTmuQChPt2grEhNYnI5351Hpk1J9idGZJ
         message: |
           
-          ${{GITHUB_REPOSITORY}} : dotnet-build-and-test
+          ${{ github.repository}} : dotnet-build-and-test
           Actor: ${{ github.actor }}
           Success
           

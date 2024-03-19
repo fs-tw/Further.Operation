@@ -12,10 +12,10 @@ jobs:
       MODULE_DIR_NAME: Further.Operation
     steps:
       - uses: actions/checkout@v3
-      
+
       - uses: actions/setup-dotnet@master
         with:
-          dotnet-version: 8.0.x    
+          dotnet-version: 8.0.x
 
       - id: commonProps
         uses: juliangruber/read-file-action@v1
@@ -25,9 +25,9 @@ jobs:
       - id: getVersion
         uses: AsasInnab/regex-action@v1
         with:
-          regex_pattern: '(?<=>)[^<>]+(?=</Version>)'
-          regex_flags: 'gim'
-          search_string: '${{ steps.commonProps.outputs.content }}'
+          regex_pattern: "(?<=>)[^<>]+(?=</Version>)"
+          regex_flags: "gim"
+          search_string: "${{ steps.commonProps.outputs.content }}"
 
       - id: nuget
         shell: pwsh
@@ -76,9 +76,9 @@ jobs:
 
       - uses: tanaka-takayoshi/nuget-publish-to-github-packages-action@v2.1
         with:
-          nupkg-path:  '${{ github.workspace }}/nugetPackages/*.nupkg'
-          repo-owner:  'fs-tw'
-          gh-user:  'fs-tw'
+          nupkg-path: "${{ github.workspace }}/nugetPackages/*.nupkg"
+          repo-owner: "fs-tw"
+          gh-user: "fs-tw"
           token: ${{ secrets.PERSONAL_TOKEN }}
           skip-duplicate: true
 
@@ -87,13 +87,13 @@ jobs:
         with:
           tag: ${{ steps.getVersion.outputs.first_match }}
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}         
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
 
       - if: ${{ steps.checkTag.outputs.exists == 'false' }}
         uses: tvdias/github-tagger@v0.0.1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }} 
-          tag: ${{ steps.getVersion.outputs.first_match }}            
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.getVersion.outputs.first_match }}
 
       - uses: louis70109/line-notify-action@master
         if: steps.publish.outcome != 'success'
@@ -101,9 +101,9 @@ jobs:
           token: ${{ secrets.LINE_TOKEN }}
           message: |
 
-            ${{GITHUB_REPOSITORY}} : dotnet-publish
+            ${{ github.repository}} : dotnet-publish
             Actor: ${{ github.actor }}
-            NG : ${{GITHUB_REPOSITORY}} dotnet-publish fail
+            NG : ${{ github.repository}} dotnet-publish fail
 
       - uses: louis70109/line-notify-action@master
         if: steps.publish.outcome == 'success'
@@ -111,6 +111,6 @@ jobs:
           token: ${{ secrets.LINE_TOKEN }}
           message: |
 
-            ${{GITHUB_REPOSITORY}} : dotnet-publish
+            ${{ github.repository}} : dotnet-publish
             Actor: ${{ github.actor }}
-            PASS : ${{GITHUB_REPOSITORY}} dotnet-publish success
+            PASS : ${{ github.repository}} dotnet-publish success
