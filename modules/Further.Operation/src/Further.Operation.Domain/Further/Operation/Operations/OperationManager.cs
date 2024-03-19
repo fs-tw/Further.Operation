@@ -67,7 +67,7 @@ namespace Further.Operation.Operations
                 id: operationInfo.Id,
                 operationId: operationInfo!.OperationId!,
                 operationName: operationInfo!.OperationName!,
-                result: operationInfo!.Result!,
+                result: operationInfo!.GetResult()!,
                 isSuccess: operationInfo!.IsSuccess!,
                 executionDuration: operationInfo!.ExecutionDuration!,
                 tenantId: CurrentTenant.Id);

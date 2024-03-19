@@ -35,7 +35,7 @@ namespace Further.Abp.Operation
             this.Id = id;
         }
 
-        public OperationInfo(Guid id, string? operationId, string? operationName, Result result, List<OperationOwnerInfo> owners, int executionDuration)
+        public OperationInfo(Guid id, string operationId, string operationName, IResultBase result, List<OperationOwnerInfo> owners, int executionDuration)
         {
             this.Id = id;
             this.OperationId = operationId;

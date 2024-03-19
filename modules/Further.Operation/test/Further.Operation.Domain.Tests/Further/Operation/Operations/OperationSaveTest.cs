@@ -81,11 +81,5 @@ namespace Further.Operation.Operations
             Assert.Contains(operationId, ids);
         }
 
-        [Fact]
-        public async Task TestCacheAsync()
-        {
-            await distributedCache.SetStringAsync("test", "test");
-        }
-
     }
 }
