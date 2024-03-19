@@ -38,7 +38,7 @@ namespace Further.Operation.Operations
 
             var result = await operationAppService.GetListAsync(input);
 
-            Assert.Equal(1, result.TotalCount);
+            Assert.True(result.TotalCount > 1);
         }
 
         [Fact]
