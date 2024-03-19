@@ -21,5 +21,8 @@ namespace Further.Operation.Operations
         public OperationOwnerFilter? OperationOwners { get; set; }
 
         public Range<int>? ExecutionDuration { get; set; }
+
+        [CompareTo(nameof(Operation.CreationTime))]
+        public Range<DateTime>? CreationTime { get; set; }
     }
 }

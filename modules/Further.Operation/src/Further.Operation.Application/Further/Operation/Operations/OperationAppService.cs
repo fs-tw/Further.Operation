@@ -44,10 +44,10 @@ namespace Further.Operation.Operations
             {
                 Filter = input.Filter,
                 IsSuccess = input.IsSuccess,
-                ExecutionDuration = new AutoFilterer.Types.Range<int>
+                CreationTime = new AutoFilterer.Types.Range<DateTime>
                 {
-                    Min = input.ExecutionDuration?.Min,
-                    Max = input.ExecutionDuration?.Max
+                    Min = input.CreationTime?.Min,
+                    Max = input.CreationTime?.Max
                 },
                 OperationOwners = new OperationOwnerFilter
                 {
