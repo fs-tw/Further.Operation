@@ -18,7 +18,7 @@ namespace Further.Abp.Operation
 
         public async Task<Guid> GetCurrentId()
         {
-            return (Guid)operationProvider.CurrentId;
+            return (Guid)operationProvider.GetCurrentId();
         }
     }
 
@@ -33,7 +33,7 @@ namespace Further.Abp.Operation
 
         public async Task<Guid> GetCurrentId()
         {
-            return (Guid)operationProvider.CurrentId;
+            return (Guid)operationProvider.GetCurrentId();
         }
     }
 
@@ -48,8 +48,8 @@ namespace Further.Abp.Operation
 
         public async Task<Guid> GetCurrentId()
         {
-            operationProvider.Initialize();
-            return (Guid)operationProvider.CurrentId;
+            operationProvider.SetCurrentId(Guid.NewGuid());
+            return (Guid)operationProvider.GetCurrentId();
         }
     }
 
@@ -68,7 +68,7 @@ namespace Further.Abp.Operation
 
         public async Task<bool> CheckCurrentId()
         {
-            return operationProvider.CurrentId == await testOperationManager2.GetCurrentId();
+            return operationProvider.GetCurrentId() == await testOperationManager2.GetCurrentId();
         }
     }
 }

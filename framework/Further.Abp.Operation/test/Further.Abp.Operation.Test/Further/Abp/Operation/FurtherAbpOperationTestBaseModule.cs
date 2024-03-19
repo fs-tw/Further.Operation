@@ -16,11 +16,11 @@ namespace Further.Abp.Operation
     [DependsOn(
     typeof(AbpAutofacModule),
     typeof(AbpTestBaseModule),
-    typeof(AbpAuthorizationModule),
-    typeof(AbpOperationModule))]
+    typeof(AbpAuthorizationModule))]
     [DependsOn(
     typeof(AbpDddDomainModule),
     typeof(AbpCachingModule))]
+    [DependsOn(typeof(AbpOperationModule))]
     public class FurtherAbpOperationTestBaseModule : AbpModule
     {
         public override void ConfigureServices(ServiceConfigurationContext context)

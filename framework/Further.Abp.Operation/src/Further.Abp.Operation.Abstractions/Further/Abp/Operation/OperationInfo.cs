@@ -1,11 +1,15 @@
 ﻿using FluentResults;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 
 namespace Further.Abp.Operation
 {
+
+    [Serializable]
     public class OperationInfo
     {
         public Guid Id { get; private set; }
@@ -13,11 +17,15 @@ namespace Further.Abp.Operation
 
         public string? OperationName { get; set; }
 
-        public Result Result { get; } = Result.Ok();
+        public IResultBase Result { get; set; } = FluentResults.Result.Ok();
 
+        public Result GetResult()
+        {
+            return (Result)Result;
+        }
         public bool IsSuccess => this.Result.IsSuccess;
 
-        public List<OperationOwnerInfo> Owners { get; } = new();
+        public List<OperationOwnerInfo> Owners { get; set; } = new();
 
         public int ExecutionDuration { get; set; } = 0;
 
@@ -27,7 +35,7 @@ namespace Further.Abp.Operation
             this.Id = id;
         }
 
-        public OperationInfo(Guid id, string? operationId, string? operationName,Result result, List<OperationOwnerInfo> owners,int executionDuration)
+        public OperationInfo(Guid id, string operationId, string operationName, IResultBase result, List<OperationOwnerInfo> owners, int executionDuration)
         {
             this.Id = id;
             this.OperationId = operationId;

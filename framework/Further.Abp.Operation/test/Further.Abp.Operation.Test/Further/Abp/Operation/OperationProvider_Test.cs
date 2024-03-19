@@ -9,17 +9,17 @@ using Xunit;
 
 namespace Further.Abp.Operation
 {
-    public class OperationProviderTest : OperationTestBase
+    public class OperationProvider_Test : OperationTestBase
     {
         private readonly IOperationProvider operationProvider;
 
-        public OperationProviderTest()
+        public OperationProvider_Test()
         {
             operationProvider = GetRequiredService<IOperationProvider>();
         }
 
         [Fact]
-        public async Task ModifyOperationAsync()
+        public async Task CreateOperationAsync()
         {
             var operationId = Guid.NewGuid();
             var message = "Test";
@@ -27,11 +27,11 @@ namespace Further.Abp.Operation
             // 定義修改操作
             Action<OperationInfo> action = (op) =>
             {
-                op.Result.WithSuccess(new Success(message));
+                op.GetResult().WithSuccess(new Success(message));
             };
 
             // 執行修改操作
-            await operationProvider.ModifyOperationAsync(operationId, action);
+            await operationProvider.CreateOperationAsync(operationId, action);
 
             // 驗證
             var finalOperationInfo = await operationProvider.GetAsync(operationId);
@@ -39,15 +39,20 @@ namespace Further.Abp.Operation
         }
 
         [Fact]
-        public async Task ModifyOperationAsync_MultipleThreads()
+        public async Task UpdateOperationAsync_MultipleThreads()
         {
             var operationId = Guid.NewGuid();
             var random = new Random();
 
+            await operationProvider.CreateOperationAsync(operationId, o =>
+            {
+                o.OperationId = "UpdateOperationAsync_MultipleThreads";
+            });
+
             // 定義修改操作
             Action<OperationInfo> action = (op) =>
             {
-                op.Result.WithSuccess(new Success("Test"));
+                op.GetResult().WithSuccess(new Success("Test"));
             };
 
             int numberOfTasks = 10; // 並行任務的數量
@@ -55,12 +60,12 @@ namespace Further.Abp.Operation
 
             for (int i = 0; i < numberOfTasks; i++)
             {
-                // 每個任務都調用 ModifyOperationAsync
+                // 每個任務都調用 CreateOperationAsync
                 tasks.Add(Task.Run(async () =>
                 {
                     var delay = random.Next(50, 151);
                     await Task.Delay(delay);
-                    await operationProvider.ModifyOperationAsync(operationId, action);
+                    await operationProvider.UpdateOperationAsync(operationId, action);
                 }));
             }
 
@@ -73,11 +78,16 @@ namespace Further.Abp.Operation
         }
 
         [Fact]
-        public async Task ModifyOperationAsync_MultipleThreads_NotOverAdd()
+        public async Task UpdateOperationAsync_MultipleThreads_NotOverAdd()
         {
             var operationId = Guid.NewGuid();
             var maxNumberOfReasons = 10;
             var random = new Random();
+
+            await operationProvider.CreateOperationAsync(operationId, o =>
+            {
+                o.OperationId = "UpdateOperationAsync_MultipleThreads_NotOverAdd";
+            });
 
             // 定義修改操作
             Action<OperationInfo> action = (op) =>
@@ -86,7 +96,7 @@ namespace Further.Abp.Operation
                 {
                     return;
                 }
-                op.Result.WithSuccess(new Success("Test"));
+                op.GetResult().WithSuccess(new Success("Test"));
             };
 
             int numberOfTasks = 50; // 並行任務的數量
@@ -94,12 +104,12 @@ namespace Further.Abp.Operation
 
             for (int i = 0; i < numberOfTasks; i++)
             {
-                // 每個任務都調用 ModifyOperationAsync
+                // 每個任務都調用 CreateOperationAsync
                 tasks.Add(Task.Run(async () =>
                 {
                     var delay = random.Next(50, 151);
                     await Task.Delay(delay);
-                    await operationProvider.ModifyOperationAsync(operationId, action);
+                    await operationProvider.UpdateOperationAsync(operationId, action);
                 }));
             }
 
@@ -112,12 +122,17 @@ namespace Further.Abp.Operation
         }
 
         [Fact]
-        public async Task ModifyOperationAsync_MultipleThreads_NotOverAdd_WithCurrentId()
+        public async Task UpdateOperationAsync_MultipleThreads_NotOverAdd_WithCurrentId()
         {
-            operationProvider.Initialize();
-            var operationId = operationProvider.CurrentId;
+            operationProvider.SetCurrentId(Guid.NewGuid());
+            var operationId = operationProvider.GetCurrentId();
             var maxNumberOfReasons = 10;
             var random = new Random();
+
+            await operationProvider.CreateOperationAsync((Guid)operationId, o =>
+            {
+                o.OperationId = "UpdateOperationAsync_MultipleThreads_NotOverAdd_WithCurrentId";
+            });
 
             // 定義修改操作
             Action<OperationInfo> action = (op) =>
@@ -126,7 +141,7 @@ namespace Further.Abp.Operation
                 {
                     return;
                 }
-                op.Result.WithSuccess(new Success("Test"));
+                op.GetResult().WithSuccess(new Success("Test"));
             };
 
             int numberOfTasks = 50; // 並行任務的數量
@@ -139,7 +154,7 @@ namespace Further.Abp.Operation
                 {
                     var delay = random.Next(50, 151);
                     await Task.Delay(delay);
-                    await operationProvider.ModifyOperationAsync(action);
+                    await operationProvider.UpdateOperationAsync((Guid)operationId, action);
                 }));
             }
 
@@ -154,9 +169,11 @@ namespace Further.Abp.Operation
         [Fact]
         public async Task CurrentIdTestAsync()
         {
-            operationProvider.Initialize();
             var manager1 = GetRequiredService<TestOperationManager>();
             var manager2 = GetRequiredService<TestOperationManager2>();
+
+            operationProvider.SetCurrentId(Guid.NewGuid());
+
             var id1 = await manager1.GetCurrentId();
             var id2 = await manager2.GetCurrentId();
 
@@ -168,12 +185,14 @@ namespace Further.Abp.Operation
         {
             var manager1 = GetRequiredService<TestOperationManager>();
             var manager3 = GetRequiredService<TestOperationManager3>();
-            operationProvider.Initialize();
+
+            operationProvider.SetCurrentId(Guid.NewGuid());
+
             var id1 = await manager1.GetCurrentId();
             var id2 = await manager3.GetCurrentId();
 
-            Assert.Equal(operationProvider.CurrentId, id1);
-            Assert.NotEqual(operationProvider.CurrentId, id2);
+            Assert.Equal(operationProvider.GetCurrentId(), id1);
+            Assert.NotEqual(operationProvider.GetCurrentId(), id2);
         }
 
         [Fact]
@@ -181,12 +200,30 @@ namespace Further.Abp.Operation
         {
             var manager2 = GetRequiredService<TestOperationManager2>();
             var manager4 = GetRequiredService<TestOperationManager4>();
-            operationProvider.Initialize();
+
+            operationProvider.SetCurrentId(Guid.NewGuid());
+
             var id1 = await manager2.GetCurrentId();
             var id2 = await manager4.CheckCurrentId();
 
-            Assert.Equal(operationProvider.CurrentId, id1);
+            Assert.Equal(operationProvider.GetCurrentId(), id1);
             Assert.True(id2);
+        }
+
+        [Fact]
+        public async Task OperationGetListIdAsync()
+        {
+            var operationId = Guid.NewGuid();
+
+            await operationProvider.CreateOperationAsync(operationId, operationInfo =>
+            {
+                operationInfo.OperationId = operationId.ToString();
+            });
+
+            var ids = await operationProvider.ListIdsAsync();
+
+            Assert.NotNull(ids);
+            Assert.Contains(operationId, ids);
         }
     }
 }

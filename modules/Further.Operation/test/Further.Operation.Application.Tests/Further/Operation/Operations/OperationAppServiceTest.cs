@@ -65,14 +65,24 @@ namespace Further.Operation.Operations
 
             Assert.NotNull(result);
             Assert.Equal(test, result.Id);
-            Assert.Equal(1, result.OperationOwners.Count);
+            Assert.Equal(result.OperationOwners.Count, 1);
+        }
+
+        [Fact]
+        public async Task GetListOwnerTypeAsync()
+        {
+            var types = await operationAppService.GetListOwnerTypeAsync();
+
+            Assert.NotNull(types);
+            Assert.NotEmpty(types);
+            Assert.Contains("TestOperationType", types);
         }
 
         protected async Task<Guid> CreateTestOperation()
         {
             var operationId = Guid.NewGuid();
 
-            await operationProvider.ModifyOperationAsync(operationId, operationInfo =>
+            await operationProvider.CreateOperationAsync(operationId, operationInfo =>
             {
                 operationInfo.OperationId = operationId.ToString();
                 operationInfo.OperationName = "TestOperation";

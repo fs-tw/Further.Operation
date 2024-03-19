@@ -8,6 +8,8 @@ namespace Further.Operation.Operations
 {
     public interface IOperationAppService
     {
+        Task<List<string>> GetListOwnerTypeAsync();
+
         Task<OperationDto> GetAsync(Guid id);
 
         Task<PagedResultDto<OperationDto>> GetListAsync(OperationDto.GetListInput input);

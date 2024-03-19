@@ -33,7 +33,7 @@ namespace Further.Operation.Operations
 
             public bool? IsSuccess { get; set; }
 
-            public FurtherOperationRange<int>? ExecutionDuration { get; set; }
+            public FurtherOperationRange<DateTime>? CreationTime { get; set; }
 
             public string? EntityType { get; set; }
 
