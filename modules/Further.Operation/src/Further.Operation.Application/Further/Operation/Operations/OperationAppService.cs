@@ -43,6 +43,7 @@ namespace Further.Operation.Operations
             var filter = new OperationFilter
             {
                 Filter = input.Filter,
+                OperationName = input.OperationName,
                 IsSuccess = input.IsSuccess,
                 CreationTime = new AutoFilterer.Types.Range<DateTime>
                 {
