@@ -171,7 +171,7 @@ public partial class YourDbContext : AbpDbContext<YourDbContext>, IYourModuleDbC
 # API
 ## OperationModule 目前可用API
 
-![api](../images/api-swagger.png)
+![api](./images/api-swagger.png)
 
 目前OperationModule提供的API如下：
 
