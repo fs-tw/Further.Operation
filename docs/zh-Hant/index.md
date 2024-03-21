@@ -114,7 +114,7 @@ Task UpdateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? slidi
 
 此為豐碩私人repo，需要使用github帳號，密碼使用github Personal Access Token
 
-## 模組依賴
+## 設定流程
 1. 專案引用下列模組，Modeul檔加上DependsOn:
     - Host/DbMigrator: Further.Abp.Operation
     - HttpApi: Further.Operation.HttpApi
@@ -131,7 +131,7 @@ Configure<FurtherOperationOptions>(options =>
     options.EntityTypes.Add(new OperationOwnerTypeDefinition(typeof(YourEntityB).FullName));
 });
 ```
-3. 讓你的DbContext繼承IOperationDbContext,並且在DbContext上加上ReplaceDbContextAttribute
+3. 讓模組的DbContext繼承IOperationDbContext,並且在DbContext上加上ReplaceDbContext，之後補上dbSet和OnModelCreating的設定
 ```csharp
 //IYourModuleDbContext.cs
 public partial interface IYourModuleDbContext : Further.Operation.EntityFrameworkCore.IOperationDbContext;
@@ -156,7 +156,10 @@ public partial class YourDbContext : AbpDbContext<YourDbContext>, IYourModuleDbC
     }
 }
 ```
-4. AppSettings需要設定Operation參數和Redis連線，要注意若同時有兩個host啟用IsEnableSubscribe，資料會重複建立，請確保只有一個host啟用IsEnableSubscribe
+
+4. 新增Migration，此時應該會看到Migration新增了Operation和OperationOwner的table
+
+5. AppSettings需要設定Operation參數和Redis連線，要注意若同時有兩個host啟用IsEnableSubscribe，資料會重複建立，請確保只有一個host啟用IsEnableSubscribe
 ```json
 "Operation": 
 {
