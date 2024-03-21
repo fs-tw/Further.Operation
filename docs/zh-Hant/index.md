@@ -1,14 +1,15 @@
-### 操作紀錄模組介紹
+# 概述
+## 操作紀錄模組介紹
 
 操作紀錄模組是一個用來記錄使用者操作的模組，它可以記錄使用者的操作紀錄，而且可以進行查詢。
 並且利用redis過期事件的特性進行保存
 
-### 操作紀錄模組功能
+## 操作紀錄模組功能
 
 - 記錄使用者操作紀錄
 - 查詢使用者操作紀錄
 
-### 操作紀錄模組使用
+## 操作紀錄模組使用
 
 實體介紹
 
@@ -105,4 +106,304 @@ public class OperationSave : ITransientDependency
 Task CreateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? slidingExpiration = null);
 
 Task UpdateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? slidingExpiration = null);
+```
+
+# API
+## OperationModule 目前可用API
+
+![api](../images/api-swagger.png)
+
+目前OperationModule提供的API如下：
+
+## 單查api
+
+requestUrl:  
+```
+/api/operation/operation/{id}
+```
+
+回傳範例json
+
+```json
+{
+  "operationId": "OrderExpireActionHandler.ExecuteAsync",
+  "operationName": "訂單即將到期通知",
+  "result": "{\"isFailed\":false,\"isSuccess\":true,\"reasons\":[{\"message\":\"曹O卿 沒有 email 無法寄送通知\",\"metadata\":{}}],\"errors\":[],\"successes\":[{\"message\":\"曹O卿 沒有 email 無法寄送通知\",\"metadata\":{}}]}",
+  "isSuccess": true,
+  "executionDuration": 0,
+  "operationResult": {
+    "isFailed": false,
+    "isSuccess": true,
+    "reasons": [
+      {
+        "message": "曹O卿 沒有 email 無法寄送通知",
+        "metadata": {}
+      }
+    ],
+    "errors": [],
+    "successes": [
+      {
+        "message": "曹O卿 沒有 email 無法寄送通知",
+        "metadata": {}
+      }
+    ]
+  },
+  "operationOwners": [
+    {
+      "operationId": "5d6fd8e5-f1b2-44b0-6800-3a114e7a1e87",
+      "entityType": "Ptcma.Portal.Orders.Order",
+      "entityId": "f24119b0-2493-b057-557f-3a114e65f895",
+      //metaData為 json字串 格式為 {"key":"value"}
+      //key type string
+      //value type object
+      "metaData": "{}",
+      "isDeleted": false,
+      "deleterId": null,
+      "deletionTime": null,
+      "lastModificationTime": null,
+      "lastModifierId": null,
+      "creationTime": "2024-03-14T09:31:28.4607848Z",
+      "creatorId": null,
+      "id": "839d2b4b-da52-d205-6bb1-3a114e7a3b21"
+    }
+  ],
+  "isDeleted": false,
+  "deleterId": null,
+  "deletionTime": null,
+  "lastModificationTime": null,
+  "lastModifierId": null,
+  "creationTime": "2024-03-14T09:31:28.4437535Z",
+  "creatorId": null,
+  "id": "5d6fd8e5-f1b2-44b0-6800-3a114e7a1e87"
+}
+```
+
+## 多筆查詢api
+
+requestUrl:  
+```
+/api/operation/operation
+```
+
+可當過濾條件的參數有
+
+- filter: string (搜尋operationName)
+
+- isSuccess: boolean (是否成功)
+
+- creationTime.Max: DataTime (建立時間最大值)
+
+- creationTime.Min: DataTime (建立時間最小值)
+
+- entityType: string (實體類型，目前不開放多筆查詢，待後續擴充)
+
+- entityId: string (實體Id，目前不開放多筆查詢，待後續擴充)
+
+- sorting: string (排序)
+
+- maxResultCount: int (最大回傳筆數)
+
+- skipCount: int (跳過筆數)
+
+回傳範例json
+
+```json
+{
+  "totalCount": 8,
+  "items": [
+    {
+      "operationId": "CertificateExpireActionHandler.ExecuteAsync",
+      "operationName": "證照過期通知",
+      "result": "{\"isFailed\":false,\"isSuccess\":true,\"reasons\":[{\"message\":\"已寄送通知給 戴O雄\",\"metadata\":{}}],\"errors\":[],\"successes\":[{\"message\":\"已寄送通知給 戴O雄\",\"metadata\":{}}]}",
+      "isSuccess": true,
+      "executionDuration": 0,
+      "operationResult": {
+        "isFailed": false,
+        "isSuccess": true,
+        "reasons": [
+          {
+            "message": "已寄送通知給 戴O雄",
+            "metadata": {}
+          }
+        ],
+        "errors": [],
+        "successes": [
+          {
+            "message": "已寄送通知給 戴O雄",
+            "metadata": {}
+          }
+        ]
+      },
+      "operationOwners": [
+        {
+          "operationId": "0ef28f0c-bc4d-a39f-619a-3a114eb3eb6a",
+          "entityType": "Ptcma.Organization.DoctorInfos.DoctorInfo",
+          "entityId": "0d04bcaf-7c65-1fb0-bdba-3a114df77191",
+          "metaData": "{}",
+          "isDeleted": false,
+          "deleterId": null,
+          "deletionTime": null,
+          "lastModificationTime": null,
+          "lastModifierId": null,
+          "creationTime": "2024-03-14T10:34:40.6685014Z",
+          "creatorId": null,
+          "id": "816492f8-b9bd-7993-bd89-3a114eb41870"
+        }
+      ],
+      "isDeleted": false,
+      "deleterId": null,
+      "deletionTime": null,
+      "lastModificationTime": null,
+      "lastModifierId": null,
+      "creationTime": "2024-03-14T10:34:40.6508379Z",
+      "creatorId": null,
+      "id": "0ef28f0c-bc4d-a39f-619a-3a114eb3eb6a"
+    },
+  ]
+}
+```
+
+# UI和UX規劃
+## OperationModuleUI規劃
+
+會中討論Operation模組的UI和接口，UI以表格顯示操作記錄，討論后，需要顯示的欄位和接口的過濾欄位規定如下：
+
+## 頁面一
+---
+
+本體Operation草圖
+![ui畫面1](./images/UI草圖1.png)
+
+### 顯示欄位
+
+- 操作      說明：可點擊查看關聯實體
+    - 查看關聯實體
+    - 查看詳細訊息
+- 操作名稱
+- 建立時間
+- 是否成功
+- 操作詳情  說明：用json viewer顯示【operationOwners】和【operationResult】中的內容，給開發者看
+
+### 過濾欄位
+- 操作名稱下拉選單
+- 創建時間的區間
+- 是否成功下拉選單(成功，失敗，不限)
+
+## 頁面二
+---
+
+從操作記錄點擊查看關聯實體，會跳轉到關聯實體的詳細頁面，顯示關聯實體的詳細信息，如下：
+
+查看關聯實體草圖
+![ui草圖2](./images/UI草圖2.png)
+
+### 顯示欄位
+
+- 操作      說明:無功能
+- 實體類型
+- 操作詳情  說明：用json viewer顯示【metadata】中的內容給開發者看
+
+## 頁面三
+---
+
+從操作記錄點擊查看查看詳細訊息，會跳轉到查看詳細訊息的頁面，如下：
+
+查看詳細訊息草圖
+![ui草圖3](./images/UI草圖3.png)
+
+### 顯示欄位
+
+- 操作      說明:無功能
+- 操作訊息
+
+## 附件
+---
+
+json viewer畫面參考：
+![ui畫面2](./images/ui畫面2.png)
+
+
+# 實體規劃
+### OperationModule 實體規劃
+
+![OperationModule](../images/operation-entity.png)
+
+實體欄位介紹
+
+實體介紹
+
+Operation 本體，為保存操作紀錄的主要實體，每一次操作都會產生一筆Operation紀錄
+```c#
+public class Operation
+{
+    public Guid Id { get; private set; }
+
+    //操作function Name
+    public string OperationId { get; set; }
+
+    //操作名稱
+    public string OperationName { get; set; }
+
+    //過程每個步驟的訊息
+    public Result Result { get; set; }
+
+    //整個操作是否完成，通常為Result的IsSuccess
+    public bool IsSuccess {get;set;}
+
+    //執行消耗時間(可能考慮移除)
+    public int ExecutionDuration { get; set; }
+
+    //操作所關聯的實體
+    public List<OperationOwner> Owners { get; } = new();
+}
+```
+
+Result物件，主要訊息的保存位置
+
+
+```c#
+public class OperationResult
+{
+    //當error有任何一筆即為false
+    public  bool IsSuccess { get; set; }
+
+    //為IsSuccess的相反
+    public  bool IsFailed { get; set; }
+
+    //操作訊息，不管是成功或失敗都會複製一分到Reasons
+    public  List<OperationReason> Reasons { get; set; } = new();
+
+    //操作失敗的訊息
+    public  List<OperationReason> Errors { get; set; } = new();
+
+    //操作成功的訊息
+    public  List<OperationReason> Successes { get; set; } = new();
+}
+
+public class OperationReason
+{
+    public string Message { get; set; } = null!;
+
+    //任意額外資訊
+    public Dictionary<string, object> Metadata { get; set; } = new();
+}
+```
+
+OperationOwner，保存跟這次操作有關的實體資訊
+```c#
+public class OperationOwner
+{
+    public Guid Id { get; private set; }
+
+    public Guid OperationId { get; set; }
+
+    //關聯實體type的fullName
+    public string EntityType { get; set; }
+
+    //關聯實體的Id
+    public Guid EntityId { get; set; }
+
+    //任意額外資訊
+    public Dictionary<string, object> MetaData { get; set; }
+}
 ```
