@@ -85,7 +85,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }} 
           tag: ${{ steps.getVersion.outputs.first_match }}            
 
-  notify-end:
+  notify:
     runs-on: ubuntu-latest
     needs: [dotnet-publish]
     steps:
@@ -97,7 +97,7 @@ jobs:
 
             ${{ github.repository}} : dotnet-publish
             Actor: ${{ github.actor }}
-            PASS : ${{ github.repository}} dotnet-publish fail
+            Result : Fail
 
       - uses: louis70109/line-notify-action@master
         if : ${{ needs.dotnet-publish.outputs.outcome == 'success' }}
@@ -107,4 +107,4 @@ jobs:
 
             ${{ github.repository}} : dotnet-publish
             Actor: ${{ github.actor }}
-            PASS : ${{ github.repository}} dotnet-publish success
+            Result : Success
