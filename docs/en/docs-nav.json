@@ -1,0 +1,17 @@
+{
+  "items": [
+    {
+      "text":"首頁",
+      "path":"index.md"
+    },
+    {
+      "text": "操作紀錄",
+      "items": [
+        {
+          "text": "Further.Operation規劃",
+          "path": "Further.Operation/index.md"
+        }
+      ]
+    }
+  ]
+}
