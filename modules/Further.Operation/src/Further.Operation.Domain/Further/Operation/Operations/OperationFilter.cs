@@ -10,11 +10,17 @@ namespace Further.Operation.Operations
     public class OperationFilter : OperationFilterBase<Operation>
     {
         [CompareTo(
-            nameof(Operation.Id),
+            nameof(Operation.OperationId),
             nameof(Operation.OperationName)
             )]
         [StringFilterOptions(StringFilterOption.Contains)]
         public string? Filter { get; set; }
+
+        [StringFilterOptions(StringFilterOption.Equals)]
+        public string? OperationId { get; set; }
+
+        [StringFilterOptions(StringFilterOption.Equals)]
+        public string? OperationName { get; set; }
 
         public bool? IsSuccess { get; set; }
 

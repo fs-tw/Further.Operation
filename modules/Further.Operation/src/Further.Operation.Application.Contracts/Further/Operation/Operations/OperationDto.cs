@@ -31,6 +31,8 @@ namespace Further.Operation.Operations
             #region DataTransferObject.EntityDto GetList
             public string? Filter { get; set; }
 
+            public string? OperationName { get; set; }
+
             public bool? IsSuccess { get; set; }
 
             public FurtherOperationRange<DateTime>? CreationTime { get; set; }
