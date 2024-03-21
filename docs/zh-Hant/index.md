@@ -108,6 +108,66 @@ Task CreateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? slidi
 Task UpdateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? slidingExpiration = null);
 ```
 
+# 安裝說明
+## Nuget來源設定
+須設定 nuget 來源 `https://nuget.pkg.github.com/fs-tw/index.json`
+
+此為豐碩私人repo，需要使用github帳號，密碼使用github Personal Access Token
+
+## 模組依賴
+1. 專案引用下列模組，Modeul檔加上DependsOn:
+    - Host/DbMigrator: Further.Abp.Operation
+    - HttpApi: Further.Operation.HttpApi
+    - Application: Further.Operation.Application.Contracts
+    - ApplicationContracts: Further.Operation.Application.Contracts
+    - Domain: Further.Operation.Domain
+    - DomainShared: Further.Operation.Domain.Shared
+    - EntityFrameWorkCore: Further.Operation.EntityFrameworkCore
+2. Operation設定Owner需要事先註冊。請在Domain module的ConfigureServices根據為需要的Entity註冊
+```csharp
+Configure<FurtherOperationOptions>(options =>
+{
+    options.EntityTypes.Add(new OperationOwnerTypeDefinition(typeof(YourEntityA).FullName));
+    options.EntityTypes.Add(new OperationOwnerTypeDefinition(typeof(YourEntityB).FullName));
+});
+```
+3. 讓你的DbContext繼承IOperationDbContext,並且在DbContext上加上ReplaceDbContextAttribute
+```csharp
+//IYourModuleDbContext.cs
+public partial interface IYourModuleDbContext : Further.Operation.EntityFrameworkCore.IOperationDbContext;
+
+//YourDbContext.cs
+[ReplaceDbContext(typeof(IOperationDbContext))]
+public partial class YourDbContext : AbpDbContext<YourDbContext>, IYourModuleDbContext
+{
+    //加上IOperationDbContext的DbSet
+    public DbSet<Operation> Operations { get; set; }
+
+    public DbSet<OperationOwner> OperationOwners { get; set; }
+
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        //...其他設定
+
+        //加上ConfigureOperation
+        builder.ConfigureOperation();
+    }
+}
+```
+4. AppSettings需要設定Operation參數和Redis連線，要注意若同時有兩個host啟用IsEnableSubscribe，資料會重複建立，請確保只有一個host啟用IsEnableSubscribe
+```json
+"Operation": 
+{
+    "IsEnableSubscribe": true
+},
+"Redis": 
+{
+    "Configuration": "127.0.0.1"
+}
+```
+
 # API
 ## OperationModule 目前可用API
 
