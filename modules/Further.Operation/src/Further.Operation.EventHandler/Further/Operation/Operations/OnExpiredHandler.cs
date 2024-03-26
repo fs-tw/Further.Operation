@@ -29,7 +29,7 @@ namespace Further.Operation.Operations
             this.logger = logger;
         }
 
-        public async Task HandleEventAsync(OperationExpiredEto eventData)
+        public virtual async Task HandleEventAsync(OperationExpiredEto eventData)
         {
             try
             {

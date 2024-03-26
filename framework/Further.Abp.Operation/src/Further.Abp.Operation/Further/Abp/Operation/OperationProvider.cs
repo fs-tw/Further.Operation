@@ -20,23 +20,23 @@ namespace Further.Abp.Operation
     public class OperationProvider : IOperationProvider, ISingletonDependency
     {
 
-        private readonly TimeSpan DefaultExpiry = TimeSpan.FromSeconds(5);
+        protected readonly TimeSpan DefaultExpiry = TimeSpan.FromSeconds(5);
 
-        private readonly TimeSpan DefaultWait = TimeSpan.FromSeconds(2);
+        protected readonly TimeSpan DefaultWait = TimeSpan.FromSeconds(2);
 
-        private readonly TimeSpan DefaultRetry = TimeSpan.FromMilliseconds(200);
+        protected readonly TimeSpan DefaultRetry = TimeSpan.FromMilliseconds(200);
 
-        private readonly OperationOptions options;
-        private readonly ILogger<OperationProvider> logger;
-        private readonly AbpDistributedCacheOptions distributedCacheOptions;
-        private readonly IDistributedCache<OperationInfo> distributedCache;
-        private readonly IConfiguration configuration;
-        private readonly IDistributedEventBus distributedEventBus;
-        private readonly AsyncLocal<Guid?> OperationId;
+        protected readonly OperationOptions options;
+        protected readonly ILogger<OperationProvider> logger;
+        protected readonly AbpDistributedCacheOptions distributedCacheOptions;
+        protected readonly IDistributedCache<OperationInfo> distributedCache;
+        protected readonly IConfiguration configuration;
+        protected readonly IDistributedEventBus distributedEventBus;
+        protected readonly AsyncLocal<Guid?> OperationId;
 
-        private RedLockFactory? redLockFactory;
-        private IDatabase? db;
-        private ConnectionMultiplexer? connection;
+        protected RedLockFactory? redLockFactory;
+        protected IDatabase? db;
+        protected ConnectionMultiplexer? connection;
 
         public OperationProvider(
             ILogger<OperationProvider> logger,

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\..\..\common.props" />
 
@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\framework\Further.Abp.Operation\src\Further.Abp.Operation\Further.Abp.Operation.csproj" />
     <ProjectReference Include="..\..\src\Further.Operation.EntityFrameworkCore\Further.Operation.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Further.Operation.EventHandler\Further.Operation.EventHandler.csproj" />
     <ProjectReference Include="..\Further.Operation.Application.Tests\Further.Operation.Application.Tests.csproj" />
   </ItemGroup>
 
