@@ -39,7 +39,7 @@ public class AbpOperationModule : AbpModule
 
     public override async Task OnApplicationInitializationAsync(ApplicationInitializationContext context)
     {
-        await context.ServiceProvider.GetRequiredService<OperationProvider>().InitializeAsync();
+        await context.ServiceProvider.GetRequiredService<IOperationProvider>().InitializeAsync();
     }
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
