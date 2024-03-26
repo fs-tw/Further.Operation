@@ -46,7 +46,7 @@ namespace Further.Operation.Operations
                 });
             });
 
-            Task.Delay(6000).Wait();
+            Task.Delay(9000).Wait();
 
             var operation = await operationRepository.GetAsync(operationId);
 
