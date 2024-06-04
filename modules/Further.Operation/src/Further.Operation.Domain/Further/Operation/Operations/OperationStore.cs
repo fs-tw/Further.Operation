@@ -44,6 +44,13 @@ namespace Further.Operation.Operations
             var operations = await GetRedisOperationAsync(filter);
             var redisCount = operations.Count;
 
+            if (redisCount >= maxResultCount)
+            {
+                var operationQuery = operations.AsQueryable();
+                operationQuery = ApplySorting(operationQuery, sorting);
+                return operationQuery.PageBy(skipCount, maxResultCount).ToList();
+            }
+
             var adjustedSkipCount = Math.Max(0, skipCount - redisCount);
             var adjustedMaxResultCount = Math.Max(1, maxResultCount - redisCount);
 
@@ -56,11 +63,12 @@ namespace Further.Operation.Operations
 
             operations.AddRange(operationDatas);
 
-            var operationQuery = operations.AsQueryable();
+            var operationQueryFinal = operations.AsQueryable();
+            operationQueryFinal = ApplySorting(operationQueryFinal, sorting);
 
-            operationQuery = ApplySorting(operationQuery, sorting);
+            var finalSkipCount = Math.Min(skipCount, redisCount);
 
-            return operationQuery.PageBy(skipCount, maxResultCount).ToList();
+            return operationQueryFinal.PageBy(finalSkipCount, maxResultCount).ToList();
         }
 
         public async Task<long> GetCountAsync(OperationFilterBase<Operation>? filter = null)
