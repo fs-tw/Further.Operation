@@ -69,24 +69,28 @@ namespace Further.Abp.Operation
         {
             var options = ConfigurationOptions.Parse(configuration["Redis:Configuration"] + ",allowAdmin=true");
 
-            try
+            while (connection == null)
             {
-                var redis = await ConnectionMultiplexer.ConnectAsync(options);
-
-                connection = redis;
-                db = redis.GetDatabase();
-                redLockFactory = RedLockFactory.Create(new List<RedLockMultiplexer> { redis });
-
-                await SubscribeKeyExpiredAsync();
-
-                connection!.ConnectionRestored += async (sender, args) =>
+                try
                 {
+                    var redis = await ConnectionMultiplexer.ConnectAsync(options);
+
+                    connection = redis;
+                    db = redis.GetDatabase();
+                    redLockFactory = RedLockFactory.Create(new List<RedLockMultiplexer> { redis });
+
                     await SubscribeKeyExpiredAsync();
-                };
-            }
-            catch(Exception ex)
-            {
-                logger.LogError(ex, "Redis connection failed.");
+
+                    connection!.ConnectionRestored += async (sender, args) =>
+                    {
+                        await SubscribeKeyExpiredAsync();
+                    };
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Redis connection failed. Retrying in 5 seconds...");
+                    await Task.Delay(5000);
+                }
             }
         }
 
