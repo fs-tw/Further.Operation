@@ -69,18 +69,25 @@ namespace Further.Abp.Operation
         {
             var options = ConfigurationOptions.Parse(configuration["Redis:Configuration"] + ",allowAdmin=true");
 
-            var redis = await ConnectionMultiplexer.ConnectAsync(options);
-
-            connection = redis;
-            db = redis.GetDatabase();
-            redLockFactory = RedLockFactory.Create(new List<RedLockMultiplexer> { redis });
-
-            await SubscribeKeyExpiredAsync();
-
-            connection!.ConnectionRestored += async (sender, args) =>
+            try
             {
+                var redis = await ConnectionMultiplexer.ConnectAsync(options);
+
+                connection = redis;
+                db = redis.GetDatabase();
+                redLockFactory = RedLockFactory.Create(new List<RedLockMultiplexer> { redis });
+
                 await SubscribeKeyExpiredAsync();
-            };
+
+                connection!.ConnectionRestored += async (sender, args) =>
+                {
+                    await SubscribeKeyExpiredAsync();
+                };
+            }
+            catch(Exception ex)
+            {
+                logger.LogError(ex, "Redis connection failed.");
+            }
         }
 
         public virtual async Task UpdateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? slidingExpiration = null)
@@ -89,7 +96,7 @@ namespace Further.Abp.Operation
             var waitTime = DefaultWait;
             var retryTime = DefaultRetry;
 
-            if (!connection!.IsConnected)
+            if (connection == null || !connection!.IsConnected)
             {
                 logger.LogWarning("Redis connection is down, skipping lock acquisition.");
                 return;
@@ -119,7 +126,7 @@ namespace Further.Abp.Operation
             var waitTime = DefaultWait;
             var retryTime = DefaultRetry;
 
-            if (!connection!.IsConnected)
+            if (connection == null || !connection!.IsConnected)
             {
                 logger.LogWarning("Redis connection is down, skipping lock acquisition.");
                 return;
@@ -146,6 +153,12 @@ namespace Further.Abp.Operation
 
         public virtual Task<List<Guid>> ListIdsAsync()
         {
+            if (connection == null || !connection!.IsConnected)
+            {
+                logger.LogWarning("Redis connection is down, skipping list ids.");
+                return Task.FromResult(new List<Guid>());
+            }
+
             string pattern = $"*k:{distributedCacheOptions.KeyPrefix}*"; // 定義符合特定規則的模式
             var keys = db!.Execute("KEYS", pattern); // 使用 KEYS 指令取得符合模式的 key
             var result = new List<Guid>();
