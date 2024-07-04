@@ -8,14 +8,16 @@ namespace Further.Abp.Operation
 {
     public class ResultConverter : JsonConverter<IResultBase>
     {
-        private readonly static JsonConverter<ResultDto> defaultConverter =
-            (JsonConverter<ResultDto>)JsonSerializerOptions.Default.GetConverter(typeof(ResultDto));
+        //此為net8專用寫法
+        //private readonly static JsonConverter<ResultDto> defaultConverter =
+        //    (JsonConverter<ResultDto>)JsonSerializerOptions.Default.GetConverter(typeof(ResultDto));
         public override IResultBase Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
             JsonSerializerOptions options)
         {
-            var obj = defaultConverter.Read(ref reader, typeof(ResultDto), options)!;
+            //var obj = defaultConverter.Read(ref reader, typeof(ResultDto), options)!;
+            var obj = JsonSerializer.Deserialize<ResultDto>(ref reader, options);
 
             var result = Result.Ok();
 
