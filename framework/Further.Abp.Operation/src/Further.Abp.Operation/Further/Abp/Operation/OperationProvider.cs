@@ -14,6 +14,7 @@ using Volo.Abp.Caching;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.EventBus.Distributed;
 using Volo.Abp.Guids;
+using Volo.Abp.Threading;
 
 namespace Further.Abp.Operation
 {
@@ -27,6 +28,7 @@ namespace Further.Abp.Operation
         protected readonly TimeSpan DefaultRetry = TimeSpan.FromMilliseconds(200);
 
         protected readonly OperationOptions options;
+        private readonly AbpAsyncTimer abpAsyncTimer;
         protected readonly ILogger<OperationProvider> logger;
         protected readonly AbpDistributedCacheOptions distributedCacheOptions;
         protected readonly IDistributedCache<OperationInfo> distributedCache;
@@ -39,6 +41,7 @@ namespace Further.Abp.Operation
         protected ConnectionMultiplexer? connection;
 
         public OperationProvider(
+            AbpAsyncTimer abpAsyncTimer,
             ILogger<OperationProvider> logger,
             IOptions<OperationOptions> options,
             IOptions<AbpDistributedCacheOptions> distributedCacheOptions,
@@ -47,12 +50,20 @@ namespace Further.Abp.Operation
             IDistributedEventBus distributedEventBus)
         {
             this.options = options.Value;
+            this.abpAsyncTimer = abpAsyncTimer;
             this.logger = logger;
             this.distributedCacheOptions = distributedCacheOptions.Value;
             this.distributedCache = distributedCache;
             this.configuration = configuration;
             this.distributedEventBus = distributedEventBus;
             OperationId = new AsyncLocal<Guid?>();
+
+            abpAsyncTimer.Period = 5000;
+            abpAsyncTimer.Elapsed = async (a) =>
+            {
+                await TryConnectAsync();
+            };
+            abpAsyncTimer.RunOnStart = true;
         }
 
         public virtual Guid? GetCurrentId()
@@ -67,30 +78,41 @@ namespace Further.Abp.Operation
 
         public virtual async Task InitializeAsync()
         {
-            var options = ConfigurationOptions.Parse(configuration["Redis:Configuration"] + ",allowAdmin=true");
+            abpAsyncTimer.Start();
+        }
 
-            while (connection == null)
+        protected virtual async Task TryConnectAsync()
+        {
+            try
             {
-                try
+                if(connection != null && connection.IsConnected)
                 {
-                    var redis = await ConnectionMultiplexer.ConnectAsync(options);
+                    return;
+                }
 
-                    connection = redis;
-                    db = redis.GetDatabase();
-                    redLockFactory = RedLockFactory.Create(new List<RedLockMultiplexer> { redis });
+                if (connection != null && !connection.IsConnected)
+                {
+                    connection.Dispose();
+                }
 
+                var options = ConfigurationOptions.Parse(configuration["Redis:Configuration"] + ",allowAdmin=true");
+
+                var redis = await ConnectionMultiplexer.ConnectAsync(options);
+
+                connection = redis;
+                db = redis.GetDatabase();
+                redLockFactory = RedLockFactory.Create(new List<RedLockMultiplexer> { redis });
+
+                await SubscribeKeyExpiredAsync();
+
+                connection!.ConnectionRestored += async (sender, args) =>
+                {
                     await SubscribeKeyExpiredAsync();
-
-                    connection!.ConnectionRestored += async (sender, args) =>
-                    {
-                        await SubscribeKeyExpiredAsync();
-                    };
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Redis connection failed. Retrying in 5 seconds...");
-                    await Task.Delay(5000);
-                }
+                };
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Redis connection failed. Retrying in 5 seconds...");
             }
         }
 
