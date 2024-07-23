@@ -42,7 +42,30 @@ namespace Further.Abp.Operation
             IResultBase value,
             JsonSerializerOptions options)
         {
-            JsonSerializer.Serialize(writer, (object)value, options);
+            //JsonSerializer.Serialize(writer, (object)value, options);
+
+            var target = new ResultDto
+            {
+                IsFailed = value.IsFailed,
+                IsSuccess = value.IsSuccess,
+                Errors = value.Errors.Select(e => new ResultDto.Error
+                {
+                    Message = e.Message,
+                    Metadata = e.Metadata.ToDictionary(m => m.Key, m => m.Value),
+                    Reasons = e.Reasons.Select(r => new ResultDto.Error
+                    {
+                        Message = r.Message,
+                        Metadata = r.Metadata.ToDictionary(m => m.Key, m => m.Value)
+                    }).ToList()
+                }).ToList(),
+                Successes = value.Successes.Select(s => new ResultDto.Success
+                {
+                    Message = s.Message,
+                    Metadata = s.Metadata.ToDictionary(m => m.Key, m => m.Value)
+                }).ToList()
+            };
+
+            JsonSerializer.Serialize(writer, target, options);
         }
     }
 }
