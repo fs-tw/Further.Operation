@@ -1,0 +1,13 @@
+﻿{
+  "packages": {
+    "Further.Operation": {
+      "path": "Further.Operation/Further.Operation.abppkg"
+    },
+    "Further.Operation.Tests": {
+      "path": "Further.Operation.Tests/Further.Operation.Tests.abppkg"
+    },
+    "Further.Operation.Contracts": {
+      "path": "Further.Operation.Contracts/Further.Operation.Contracts.abppkg"
+    }
+  }
+}

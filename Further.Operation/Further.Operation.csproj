@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\common.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Further.Operation</RootNamespace>
+  </PropertyGroup>
+    
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.AutoMapper" Version="8.3.3" />
+    <PackageReference Include="Volo.Abp.Ddd.Application" Version="8.3.3" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Mvc" Version="8.3.3" />
+
+    <ProjectReference Include="..\Further.Operation.Contracts\Further.Operation.Contracts.csproj" />
+    <PackageReference Include="Volo.Abp.EntityFrameworkCore" Version="8.3.3" />
+  </ItemGroup>
+
+</Project>
