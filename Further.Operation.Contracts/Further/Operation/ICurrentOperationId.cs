@@ -10,6 +10,7 @@ namespace Further.Operation
     {
         Guid? GetCurrentId();
 
-        void SetCurrentId(Guid id);
+        //暫不開放Set功能
+        //void SetCurrentId(Guid id);
     }
 }

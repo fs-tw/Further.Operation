@@ -7,16 +7,17 @@ namespace Further.Operation
 {
     public interface IOperationProvider
     {
-        Task CreateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? slidingExpiration = null);
+        Task CreateAsync(Guid id, OperationInfo operationInfo, TimeSpan? slidingExpiration = null, Action<OperationInfo>? errorAction = null);
 
-        Task UpdateOperationAsync(Guid id, Action<OperationInfo> action, TimeSpan? slidingExpiration = null);
+        Task UpdateAsync(Guid id, Action<OperationInfo> action, TimeSpan? slidingExpiration = null, Action<OperationInfo>? errorAction = null);
 
-        Task FinishOperationAsync(Guid id);
+        Task FinishAsync(Guid id, Action<OperationInfo>? errorAction = null);
 
-        Task<List<Guid>> ListIdsAsync();
+        Task<List<OperationInfo>> GetListAsync();
 
         Task<OperationInfo?> GetAsync(Guid id);
 
-        Task RemoveAsync(Guid id);
+        //暫不開放Remove
+        //Task RemoveAsync(Guid id);
     }
 }

@@ -13,7 +13,7 @@ namespace Further.Operation
     public class OperationInfo
     {
         public Guid Id { get; private set; }
-        public string? OperationId { get; set; }
+        //public string? OperationId { get; set; }
 
         public string? OperationName { get; set; }
 
@@ -25,9 +25,11 @@ namespace Further.Operation
         }
         public bool IsSuccess => Result.IsSuccess;
 
-        public List<OperationOwnerInfo> Owners { get; set; } = new();
+        public List<OperationCorelationInfo> Corelations { get; set; } = new();
 
-        public int ExecutionDuration { get; set; } = 0;
+        public object Data { get; set; } = new();
+
+        //public int ExecutionDuration { get; set; } = 0;
 
         [JsonConstructor]
         public OperationInfo(Guid id)
@@ -35,14 +37,14 @@ namespace Further.Operation
             Id = id;
         }
 
-        public OperationInfo(Guid id, string operationId, string operationName, IResultBase result, List<OperationOwnerInfo> owners, int executionDuration)
+        public OperationInfo(Guid id, string operationName, IResultBase result, List<OperationCorelationInfo> owners)
         {
             Id = id;
-            OperationId = operationId;
+            //OperationId = operationId;
             OperationName = operationName;
             Result = result;
-            Owners = owners;
-            ExecutionDuration = executionDuration;
+            Corelations = owners;
+            //ExecutionDuration = executionDuration;
         }
     }
 }

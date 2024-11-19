@@ -13,5 +13,10 @@ namespace Further.Operation
         {
             return Task.CompletedTask;
         }
+
+        public Task ShutdownAsync()
+        {
+            return Task.CompletedTask;
+        }
     }
 }

@@ -4,11 +4,11 @@ using System.Text;
 
 namespace Further.Operation
 {
-    public class OperationOwnerInfo
+    public class OperationCorelationInfo
     {
-        public string EntityType { get; set; } = null!;
+        public string CorelationType { get; set; } = null!;
 
-        public Guid EntityId { get; set; }
+        public Guid CorelationId { get; set; }
 
         public Dictionary<string, object> MetaData { get; set; } = new Dictionary<string, object>();
     }
