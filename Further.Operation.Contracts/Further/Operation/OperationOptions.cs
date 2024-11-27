@@ -9,7 +9,5 @@ namespace Further.Operation
     public class OperationOptions
     {
         public TimeSpan DefaultSlidingExpiration { get; set; } = TimeSpan.FromSeconds(5);
-
-        public List<Type> ExpiredProviders { get; } = new List<Type>();
     }
 }

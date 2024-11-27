@@ -22,16 +22,16 @@ namespace Further.Operation
 
             var result = Result.Ok();
 
-            obj.Errors?.ForEach(e =>
+            obj?.Errors?.ForEach(e =>
             {
                 var error = new Error(e.Message);
-                e.Metadata.ToList().ForEach(m => error.WithMetadata(m.Key, m.Value));
+                e.Metadata?.ToList().ForEach(m => error.WithMetadata(m.Key, m.Value));
                 result.WithError(error);
             });
-            obj.Successes?.ForEach(s =>
+            obj?.Successes?.ForEach(s =>
             {
                 var success = new Success(s.Message);
-                s.Metadata.ToList().ForEach(m => success.WithMetadata(m.Key, m.Value));
+                s.Metadata?.ToList().ForEach(m => success.WithMetadata(m.Key, m.Value));
                 result.WithSuccess(success);
             });
 

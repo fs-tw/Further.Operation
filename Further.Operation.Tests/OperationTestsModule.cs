@@ -26,6 +26,7 @@ namespace Further.Operation.Tests;
     typeof(AbpCachingModule),
     typeof(AbpDistributedLockingAbstractionsModule)
 )]
+//[DependsOn(typeof(OperationModule))]
 [AdditionalAssembly(typeof(OperationModule))]
 public class OperationTestsModule : AbpModule
 {

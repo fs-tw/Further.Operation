@@ -5,6 +5,8 @@ using Volo.Abp.Application;
 using Volo.Abp.EntityFrameworkCore;
 using Further.Operation.Data;
 using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.MultiTenancy;
+using Volo.Abp.Json.SystemTextJson;
 
 namespace Further.Operation;
 
@@ -30,6 +32,14 @@ public class OperationModule : AbpModule
             /* Add custom repositories here. Example:
              * options.AddRepository<Question, EfCoreQuestionRepository>();
              */
+        });
+
+        context.Services.AddSingleton<ICurrentOperationAccessor>(CurrentOperationAccessor.Instance);
+
+        Configure<AbpSystemTextJsonSerializerOptions>(x =>
+        {
+            x.JsonSerializerOptions.Converters.Add(new ResultConverter());
+            //x.JsonSerializerOptions
         });
     }
 }

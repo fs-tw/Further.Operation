@@ -11,16 +11,11 @@ namespace Further.Operation
 {
     public class OperationHandler : IDistributedEventHandler<OperationExpiredEto>, ITransientDependency
     {
-        private readonly OperationExpiredResolver operationExpiredResolver;
-
-        public OperationHandler(
-            OperationExpiredResolver operationExpiredResolver)
+        public OperationHandler()
         {
-            this.operationExpiredResolver = operationExpiredResolver;
         }
         public async Task HandleEventAsync(OperationExpiredEto eventData)
         {
-            await operationExpiredResolver.ApplyExpiredProvidersAsync(eventData.OperationInfo);
         }
     }
 }
