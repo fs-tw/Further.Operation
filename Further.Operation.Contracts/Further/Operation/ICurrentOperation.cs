@@ -16,6 +16,6 @@ namespace Further.Operation
 
         IReadOnlyCollection<OperationCorrelationInfo>? Correlations { get; }
 
-        Task SaveAsync(Action<BasicOperationInfo> action);
+        Task SaveAsync(Action<BasicOperationInfo>? action);
     }
 }

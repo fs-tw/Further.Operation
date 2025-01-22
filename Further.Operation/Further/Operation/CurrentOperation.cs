@@ -39,17 +39,17 @@ namespace Further.Operation
 
         public IReadOnlyCollection<OperationCorrelationInfo>? Correlations => _currentOperationAccessor.Current?.Correlations;
 
-        public async Task SaveAsync(Action<BasicOperationInfo> action)
+        public async Task SaveAsync(Action<BasicOperationInfo>? action)
         {
             if (this.Id.HasValue)
             {
                 try
                 {
                     await distributedCache.GetOrAddAsync(
-                        OperationConsts.GetIdKey(this.Id.Value),
+                        OperationConsts.GetOperationIdKey(this.Id.Value),
                         async () =>
                         {
-                            await distributedCache.SetAsync(OperationConsts.GetValueKey(this.Id.Value), new BasicOperationInfo(this.Id.Value), new DistributedCacheEntryOptions
+                            await distributedCache.SetAsync(OperationConsts.GetOperationValueKey(this.Id.Value), new BasicOperationInfo(this.Id.Value), new DistributedCacheEntryOptions
                             {
                                 SlidingExpiration = options.DefaultSlidingExpiration + TimeSpan.FromSeconds(10)
                             });
@@ -58,16 +58,16 @@ namespace Further.Operation
                         },
                         () => new DistributedCacheEntryOptions { SlidingExpiration = options.DefaultSlidingExpiration });
 
-                    this._currentOperationAccessor.Current = await distributedCache.GetAsync(OperationConsts.GetValueKey(this.Id.Value));
+                    this._currentOperationAccessor.Current = await distributedCache.GetAsync(OperationConsts.GetOperationValueKey(this.Id.Value));
 
-                    var item = await distributedCache.GetAsync(OperationConsts.GetValueKey(this.Id.Value));
+                    var item = await distributedCache.GetAsync(OperationConsts.GetOperationValueKey(this.Id.Value));
 
 
                     var current = _currentOperationAccessor.Current!;
 
                     action?.Invoke(current);
 
-                    await distributedCache.SetAsync(OperationConsts.GetValueKey(this.Id.Value), current, new DistributedCacheEntryOptions
+                    await distributedCache.SetAsync(OperationConsts.GetOperationValueKey(this.Id.Value), current, new DistributedCacheEntryOptions
                     {
                         SlidingExpiration = options.DefaultSlidingExpiration + TimeSpan.FromSeconds(10)
                     });

@@ -7,6 +7,6 @@ namespace Further.Operation
     //todo
     public class OperationExpiredEto
     {
-        //public OperationInfo OperationInfo { get; set; } = null!;
+        public BasicOperationInfo OperationInfo { get; set; } = null!;
     }
 }

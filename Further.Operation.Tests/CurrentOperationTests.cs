@@ -39,5 +39,19 @@ namespace Further.Operation.Tests
             _currentOperation.Name.ShouldBe("Modified");
         }
 
+        [Fact]
+        public async Task Should_RedisCache_KeyExpired()
+        {
+            // Arrange
+            var operationId = Guid.NewGuid();
+
+            _currentOperationAccessor.Initial(operationId);
+
+            await _currentOperation.SaveAsync(null);
+
+            Task.Delay(60000).Wait();
+
+        }
+
     }
 }

@@ -6,14 +6,17 @@ namespace Further.Operation
 {
     public static class OperationConsts
     {
-        public static string GetIdKey(Guid operationId)
+        public const string PrrfixOperationIdKey = "OperationId";
+
+        public const string PrrfixOperationValueKey = "OperationValue";
+        public static string GetOperationIdKey(Guid operationId)
         {
-            return $"Ids:{operationId}";
+            return $"{PrrfixOperationIdKey}_{operationId}";
         }
 
-        public static string GetValueKey(Guid operationId)
+        public static string GetOperationValueKey(Guid operationId)
         {
-            return $"Values:{operationId}";
+            return $"{PrrfixOperationValueKey}_{operationId}";
         }
     }
 }

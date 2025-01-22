@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore.Sqlite;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 
 namespace Further.Operation.Tests;
 
@@ -26,12 +27,19 @@ namespace Further.Operation.Tests;
     typeof(AbpCachingModule),
     typeof(AbpDistributedLockingAbstractionsModule)
 )]
-//[DependsOn(typeof(OperationModule))]
+[DependsOn(typeof(OperationModule))]
 [AdditionalAssembly(typeof(OperationModule))]
 public class OperationTestsModule : AbpModule
 {
     private SqliteConnection? _sqliteConnection;
-    
+
+    public override void PreConfigureServices(ServiceConfigurationContext context)
+    {
+        Configure<RedisCacheOptions>(options =>
+        {
+            options.Configuration = "localhost:6379,allowAdmin=true";
+        });
+    }
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         var configuration = context.Services.GetConfiguration();
@@ -47,7 +55,7 @@ public class OperationTestsModule : AbpModule
 
         app.UseCorrelationId();
         app.UseAbpRequestLocalization();
-        app.UseStaticFiles();
+        //app.UseStaticFiles();
         app.UseRouting();
         app.UseUnitOfWork();
         app.UseConfiguredEndpoints();
